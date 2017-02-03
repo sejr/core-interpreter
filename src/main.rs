@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use std::env;
 
 enum Token {
@@ -13,9 +15,12 @@ enum Token {
 
 mod core {
 
+    use Token;
     use std::fs::File;
+    use std::io;
+    use std::io::prelude::*;
     use std::io::{BufRead, BufReader};
-
+    
     pub fn is_valid_input(arg_count:usize) -> bool {
         /*
          * Takes an unsigned integer as input, which corresponds to the number of arguments
@@ -53,48 +58,15 @@ mod core {
         let mut buf = Vec::<u8>::new();
 
         // Iterating through the characters of the file . . .
-        while f.read_until(b'\n', &mut buf).expect("read_until failed") != 0 {
-
-            // Moving the read data into a string
-            let s = String::from_utf8(buf).expect("from_utf8 failed");
-            for c in s.chars() {
-                println!("Char: {}", c);
-
-                /* This is where our algorithm for token matching is going to come into play. We
-                 * have to check for the special symbols (; = || ==), lowercase words, integers
-                 * (sequences of unsigned numbers, including zeroes), and identifiers. Each token
-                 * starts with a unique character that will fire off a different parsing function.
-                 *
-                 * match byte {
-                 *
-                 *     ;     => handle semicolon
-                 *     =     => handle equality/assignment*
-                 *     |     => handle OR
-                 *     0-9   => handle integer
-                 *     a-z   => handle lowercase words
-                 *     A-Z   => handle identifiers
-                 *
-                 *     * if we catch an =, we check if there's another = after. if so, then we
-                 *       treat it as a test for equality; otherwise, its assignment
-                 * }
-                 */
-            }
-            buf = s.into_bytes();
-            buf.clear();
+        
+        f.read_to_end(&mut buf).expect("read_to_end failed");
+        let s = String::from_utf8(buf).expect("from_utf8 failed");
+        for c in s.chars() {
+            println!("{}", c);
         }
-    }
 
-    fn parse_symbol () {
-        // Parses a special symbol; currently supporting ;, ==, =, and ||
-    }
-
-    fn parse_word () {
-        // Parses a word, currently defined as any sequence of lowercase characters.
-    }
-
-    fn parse_identifier () {
-        // Parses an identifier, currently defined as any sequence of uppercase characters followed
-        // by any sequence of numbers.
+        buf = s.into_bytes();
+        buf.clear();
     }
 
     #[cfg(test)]
