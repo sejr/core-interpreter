@@ -11,7 +11,11 @@ enum Token {
 
 mod core {
     pub fn hello() {
-        println!("Hello from the interpreter!");
+        use std::env;
+        println!("Core was called with these args:");
+        for argument in env::args() {
+            println!("{}", argument);
+        }
     }
 
     #[cfg(test)]
