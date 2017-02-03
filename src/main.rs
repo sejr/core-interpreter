@@ -10,9 +10,11 @@ enum Token {
 }
 
 mod core_interpreter {
-
+    pub fn hello() {
+        println!("Hello from the interpreter!");
+    }
 }
 
 fn main() {
-    println!("Hello, world!");
+    core_interpreter::hello();
 }
