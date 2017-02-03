@@ -59,6 +59,25 @@ mod core {
             let s = String::from_utf8(buf).expect("from_utf8 failed");
             for c in s.chars() {
                 println!("Char: {}", c);
+                
+                /* This is where our algorithm for token matching is going to come into play. We
+                 * have to check for the special symbols (; = || ==), lowercase words, integers
+                 * (sequences of unsigned numbers, including zeroes), and identifiers. Each token
+                 * starts with a unique character that will fire off a different parsing function.
+                 *
+                 * match byte {
+                 * 
+                 *     ;     => handle semicolon
+                 *     =     => handle equality/assignment*
+                 *     |     => handle OR
+                 *     0-9   => handle integer
+                 *     a-z   => handle lowercase words
+                 *     A-Z   => handle identifiers
+                 *
+                 *     * if we catch an =, we check if there's another = after. if so, then we
+                 *       treat it as a test for equality; otherwise, its assignment
+                 * }
+                 */
             }
             buf = s.into_bytes();
             buf.clear();
