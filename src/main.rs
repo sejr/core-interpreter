@@ -57,7 +57,7 @@ mod core {
 
             assert_eq!(super::is_valid_input(case_a.len()), true, "Case A should be valid, but wasn't.");
             assert_eq!(super::is_valid_input(case_b.len()), false, "Case B should be invalid, but wasn't.");
-            assert_eq!(super::is_valid_input(case_c.len()), true, "Case C should be invalid, but wasn't.");
+            assert_eq!(super::is_valid_input(case_c.len()), false, "Case C should be invalid, but wasn't.");
         }
     }
 }
