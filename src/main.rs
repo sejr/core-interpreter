@@ -69,84 +69,11 @@ mod core {
         let mut skip_word:usize = 0;
         let mut skip_flag:bool = false;
 
-        for c in 0 .. buf.len() {
-            if skip_word == 0 {
-                // For debugging: println!("Byte: {}", buf[c] as char);
-                if buf[c] == ';' as u8 {
-                    println!("Token: {} (;)", Token::Semicolon as u8);
-                }
+        let mut i:usize = 0;
 
-                // TODO: Review code to ensure no index-related panics
-                else if buf[c] == '=' as u8 {
-                    if buf[c + 1] == '=' as u8 {
-                        if !skip_flag {
-                            println!("Token: {} (==)", Token::OpEquality as u8);
-                            skip_flag = !skip_flag;
-                        }
-                    } else {
-                        println!("Token: {} (=)", Token::OpAssignment as u8);
-                    }
-                }
-
-                // TODO: Review code to ensure no index-related panics
-                else if buf[c] == '|' as u8 {
-                    if c < buf.len() - 1 {
-                        if buf[c + 1] == '|' as u8 {
-                            println!("Token: {} (||)", Token::OpOr as u8);
-                            skip_flag = !skip_flag;
-                        } else {
-                            println!("Token: {} (error)", Token::Error as i8);
-                        }   
-                    }
-                }
-                
-                // TODO: Make this prettier
-                else if (buf[c] >= 'a' as u8) && (buf[c] <= 'z' as u8) {
-                    let mut keyword = (buf[c] as char).to_string();
-                    // println!("{}", identifier);
-                    skip_word += 1;
-                    let mut new_index:usize = c + skip_word;
-                    while buf[new_index] != ' ' as u8 {
-                        skip_word += 1;
-                        if new_index < buf.len() {
-                            let addition = buf[new_index] as char;
-                            keyword.push_str(&addition.to_string());
-                        }
-                        new_index += 1;
-                    }
-                    println!("Token: {} ({})", Token::Keyword as u8, keyword);
-                }
-
-                // Identifiers
-                else if (buf[c] >= 'A' as u8) && (buf[c] <= 'Z' as u8) {
-                    let mut identifier = "".to_string();
-                    // println!("{}", identifier);
-                    skip_word += 0;
-                    
-                    let mut new_index:usize = c + skip_word;
-                    while new_index < buf.len() {
-                    
-                        let is_valid_char:bool = buf[new_index] >= 'A' as u8 && buf[new_index] <= 'Z' as u8;
-                        let is_valid_num: bool = buf[new_index] >= '0' as u8 && buf[new_index] <= '9' as u8;
-                        let is_valid_idnt:bool = is_valid_char  || is_valid_num;
-
-                        if is_valid_idnt {
-                            let addition = buf[new_index] as char;
-                            identifier.push_str(&addition.to_string());
-                            new_index += 1;
-                        } else {
-                            break;
-                        }
-                    
-                    }
-                    
-                    println!("Token: {} ({})", Token::Identifier as u8, identifier);
-                    identifier = "".to_string();
-                }
-
-            } else {
-                skip_word -= 1;
-            }
+        while i < buf.len() {
+            println!("{}", buf[i] as char);
+            i += 1;
         }
 
         // buf = s.into_bytes();
