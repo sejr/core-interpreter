@@ -1,6 +1,6 @@
-# core-interpreter
+# core-interpreter [![Build Status](https://travis-ci.org/sejr/core-interpreter.svg?branch=master)](https://travis-ci.org/sejr/core-interpreter)
 
-Interpreter for the Core language written in Rust. This is for the Principles of Programming Languages course, CSE 5341, at Ohio State University.
+**core-interpreter** is an interpreter for Core - a basic programming language - that is implemented in Rust. It is primarily a means for me to get more hands-on experience with the Rust programming language, but is also part of an assignment for the Principles of Programming Languages course at The Ohio State University (Spring 2017 with Wayne Heym).
 
 ## Getting Started
 
