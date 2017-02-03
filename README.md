@@ -1,5 +1,7 @@
 # core-interpreter
 
+[![Build Status](https://travis-ci.org/sejr/core-interpreter.svg?branch=master)](https://travis-ci.org/sejr/core-interpreter)
+
 Interpreter for the Core language written in Rust. This is for the Principles of Programming Languages course, CSE 5341, at Ohio State University.
 
 ## Getting Started
