@@ -10,12 +10,18 @@ enum Token {
 }
 
 mod core {
-    pub fn hello() {
-        use std::env;
-        println!("Core was called with these args:");
-        for argument in env::args() {
-            println!("{}", argument);
+    use std::env;
+    pub fn is_valid_input() -> bool {
+        let args: Vec<String> = env::args().collect();
+        if args.len() != 2 {
+            return false;
+        } else {
+            return true;
         }
+    }
+
+    pub fn print_usage() {
+        println!("Usage: ./core_interpreter <core-source-file-name>");
     }
 
     #[cfg(test)]
@@ -28,5 +34,9 @@ mod core {
 }
 
 fn main() {
-    core::hello();
+    if (!core::is_valid_input()) {
+        core::print_usage();
+    } else {
+        println!("Hello!");
+    }
 }
