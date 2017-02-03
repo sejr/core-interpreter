@@ -1,14 +1,14 @@
 use std::env;
 
 enum Token {
-    Integer     = 31,
-    Identifier  = 32,
-    Semicolon   = 12,
-    Equal       = 14,
-    Or          = 19,
-    And         = 26,
-    Error       = -1,
-    EOF         = 0,
+    Integer = 31,
+    Identifier = 32,
+    Semicolon = 12,
+    Equal = 14,
+    Or = 19,
+    And = 26,
+    Error = -1,
+    EOF = 0,
 }
 
 mod core {
@@ -17,7 +17,7 @@ mod core {
     use std::io::{BufRead, BufReader};
 
     pub fn is_valid_input(arg_count:usize) -> bool {
-        /* 
+        /*
          * Takes an unsigned integer as input, which corresponds to the number of arguments
          * called with the Core interpreter executable. We are ensuring that the user called
          * the interpreter with one and only one additional argument, the file name.
@@ -59,14 +59,14 @@ mod core {
             let s = String::from_utf8(buf).expect("from_utf8 failed");
             for c in s.chars() {
                 println!("Char: {}", c);
-                
+
                 /* This is where our algorithm for token matching is going to come into play. We
                  * have to check for the special symbols (; = || ==), lowercase words, integers
                  * (sequences of unsigned numbers, including zeroes), and identifiers. Each token
                  * starts with a unique character that will fire off a different parsing function.
                  *
                  * match byte {
-                 * 
+                 *
                  *     ;     => handle semicolon
                  *     =     => handle equality/assignment*
                  *     |     => handle OR
@@ -100,7 +100,7 @@ mod core {
     #[cfg(test)]
     mod test {
         #[test]
-        fn test_is_valid_input() {            
+        fn test_is_valid_input() {
             let case_a: Vec<String> = vec!["Hello ".to_string(), "world!".to_string()];
             let case_b: Vec<String> = vec!["This ".to_string(), "won't ".to_string(), "work!".to_string()];
             let case_c: Vec<String> = vec!["Goodbye!".to_string()];
