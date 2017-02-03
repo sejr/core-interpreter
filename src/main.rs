@@ -84,6 +84,19 @@ mod core {
         }
     }
 
+    fn parse_symbol () {
+        // Parses a special symbol; currently supporting ;, ==, =, and ||
+    }
+
+    fn parse_word () {
+        // Parses a word, currently defined as any sequence of lowercase characters.
+    }
+
+    fn parse_identifier () {
+        // Parses an identifier, currently defined as any sequence of uppercase characters followed
+        // by any sequence of numbers.
+    }
+
     #[cfg(test)]
     mod test {
         #[test]
