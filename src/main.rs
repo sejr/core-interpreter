@@ -119,21 +119,29 @@ mod core {
 
                 // Identifiers
                 else if (buf[c] >= 'A' as u8) && (buf[c] <= 'Z' as u8) {
-                    let mut identifier = (buf[c] as char).to_string();
-                    skip_word += 1;
+                    let mut identifier = "".to_string();
+                    // println!("{}", identifier);
+                    skip_word += 0;
+                    
                     let mut new_index:usize = c + skip_word;
-                    while (buf[new_index] != ' ' as u8) && (new_index < buf.len()) {
-                        skip_word += 1;
-                        let addition = buf[new_index] as char;
-                        if (addition >= 'A' && addition <= 'Z') || (addition >= '0' && addition <= '9'){
+                    while new_index < buf.len() {
+                    
+                        let is_valid_char:bool = buf[new_index] >= 'A' as u8 && buf[new_index] <= 'Z' as u8;
+                        let is_valid_num: bool = buf[new_index] >= '0' as u8 && buf[new_index] <= '9' as u8;
+                        let is_valid_idnt:bool = is_valid_char  || is_valid_num;
+
+                        if is_valid_idnt {
+                            let addition = buf[new_index] as char;
                             identifier.push_str(&addition.to_string());
                             new_index += 1;
                         } else {
-                            // The identifier has ended
                             break;
                         }
+                    
                     }
+                    
                     println!("Token: {} ({})", Token::Identifier as u8, identifier);
+                    identifier = "".to_string();
                 }
 
             } else {
