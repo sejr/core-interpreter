@@ -9,12 +9,20 @@ enum Token {
     EOF         = 0,
 }
 
-mod core_interpreter {
+mod core {
     pub fn hello() {
         println!("Hello from the interpreter!");
+    }
+
+    #[cfg(test)]
+    mod test {
+        #[test]
+        fn test_eq() {
+            assert_eq!(1, 1);
+        }
     }
 }
 
 fn main() {
-    core_interpreter::hello();
+    core::hello();
 }
