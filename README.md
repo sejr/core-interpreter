@@ -6,9 +6,9 @@ Interpreter for the Core language written in Rust. This is for the Principles of
 
 Make sure you have [Rust](https://rust-lang.org] installed on your system.
 
-```
-$ git clone https://github.com/sejr/core-interpreter.git
-$ cd core-interpreter
-$ cargo build
-$ ./core-interpreter
+``` bash
+git clone https://github.com/sejr/core-interpreter.git
+cd core-interpreter
+cargo build
+./core-interpreter
 ```
