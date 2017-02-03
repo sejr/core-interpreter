@@ -4,7 +4,7 @@ Interpreter for the Core language written in Rust. This is for the Principles of
 
 ## Getting Started
 
-Make sure you have [Rust](https://rust-lang.org] installed on your system.
+Make sure you have [Rust](https://rust-lang.org) installed on your system.
 
 ``` bash
 # Clone the Git repository to your local machine
