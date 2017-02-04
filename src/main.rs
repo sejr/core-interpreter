@@ -137,23 +137,21 @@ mod lexer {
             // HANDLE INTEGER
             
             else if buf[i] as char >= '0' && buf[i] as char <= '9' {
-                /* let start_number = buf[i] as char;
+                let start_number = buf[i] as char;
                 let mut integer:String = start_number.to_string();
-                println!("{}", i);
-                if i < buf.len() -1 { 
+                
+                while i + 1 < buf.len() {
                     i += 1;
-                    while buf[i] as char >= '0' && buf[i] as char <= '9' {
+                    if buf[i] as char >= '0' && buf[i] as char <= '9' {
                         let new_digit = buf[i] as char;
                         integer.push_str(&new_digit.to_string());
-                        if i < buf.len() - 1 {
-                            i += 1;
-                        } else {
-                            break;
-                        }
+                    } else {
+                        i -= 1;
+                        break;
                     }
                 }
-                */
-                println!("INTEGER");
+
+                println!("{}", integer);
             }
 
 
