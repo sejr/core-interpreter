@@ -84,33 +84,31 @@ mod lexer {
             // HANDLE EQUALITY AND ASSIGNMENT
             
             if buf[i] as char == '=' {
-                println!("EQUAL SIGN");
-                /*if buf[i + 1] as char == '=' {
-                    println!("{}", Token::LogicalEquality as u8);
-                    i += 1; // So we can skip this character next run-through.
+                i += 1;
+                if buf[i] as char == '=' {
+                    println!("==");
                 } else {
-                    println!("{}", Token::Assignment as u8);
-                }*/
+                    println!("=");
+                    i -= 1;
+                }
             }
 
             // HANDLE LOGICAL OR
 
             else if buf[i] as char == '|' {
-                println!("OR TOKEN");
-                /*if buf[i + 1] as char == '|' {
-                    println!("{}", Token::LogicalOr as u8);
-                    i += 1;
+                i += 1;
+                if buf[i] as char == '|' {
+                    println!("||");
                 } else {
-                    println!("Error: expected ||. Logical OR requires '||'.");
-                }*/
+                    println!("Error: expected ||, got |");
+                }
             }
 
             // HANDLE SEMICOLON
 
             else if buf[i] as char == ';' {
-                println!("SEMICOLON");
-                /*println!("{}", Token::Semicolon as u8);
-            */}
+                println!(";");
+            }
 
             // HANDLE KEYWORD
 
@@ -139,6 +137,22 @@ mod lexer {
             // HANDLE INTEGER
             
             else if buf[i] as char >= '0' && buf[i] as char <= '9' {
+                /* let start_number = buf[i] as char;
+                let mut integer:String = start_number.to_string();
+                println!("{}", i);
+                if i < buf.len() -1 { 
+                    i += 1;
+                    while buf[i] as char >= '0' && buf[i] as char <= '9' {
+                        let new_digit = buf[i] as char;
+                        integer.push_str(&new_digit.to_string());
+                        if i < buf.len() - 1 {
+                            i += 1;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                */
                 println!("INTEGER");
             }
 
