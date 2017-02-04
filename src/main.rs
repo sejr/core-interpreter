@@ -3,19 +3,25 @@
 use std::env;
 
 enum Token {
-    Integer = 31,
-    Identifier = 32,
-    Semicolon = 12,
-    OpAssignment = 14,
-    OpOr = 19,
-    OpEquality = 26,
-    Keyword = 1,
-    Error = -1,
-    EOF = 0,
+    // For syntax errors
+    Error           = -1,
+
+    // Important symbols
+    EOF             = 0,
+    Keyword         = 1,    
+    Semicolon       = 12,
+    Assignment      = 14,
+
+    LogicalOr       = 19,
+    LogicalEquality = 26,
+
+    // User-defined symbols
+    Integer         = 31,
+    Identifier      = 32,
 }
 
-mod core {
-
+mod lexer {
+    
     use Token;
     use std::fs::File;
     use std::io::prelude::*;
@@ -66,13 +72,78 @@ mod core {
             println!("{}", c);
         }*/
 
-        let mut skip_word:usize = 0;
-        let mut skip_flag:bool = false;
+        // let mut skip_word:usize = 0;
+        // let mut skip_flag:bool = false;
 
         let mut i:usize = 0;
 
         while i < buf.len() {
-            println!("{}", buf[i] as char);
+
+            // println!("{}", buf[i] as char);
+
+            // HANDLE EQUALITY AND ASSIGNMENT
+            
+            if buf[i] as char == '=' {
+                println!("EQUAL SIGN");
+                /*if buf[i + 1] as char == '=' {
+                    println!("{}", Token::LogicalEquality as u8);
+                    i += 1; // So we can skip this character next run-through.
+                } else {
+                    println!("{}", Token::Assignment as u8);
+                }*/
+            }
+
+            // HANDLE LOGICAL OR
+
+            else if buf[i] as char == '|' {
+                println!("OR TOKEN");
+                /*if buf[i + 1] as char == '|' {
+                    println!("{}", Token::LogicalOr as u8);
+                    i += 1;
+                } else {
+                    println!("Error: expected ||. Logical OR requires '||'.");
+                }*/
+            }
+
+            // HANDLE SEMICOLON
+
+            else if buf[i] as char == ';' {
+                println!("SEMICOLON");
+                /*println!("{}", Token::Semicolon as u8);
+            */}
+
+            // HANDLE KEYWORD
+
+            else if buf[i] as char >= 'a' && buf[i] as char <= 'z' {
+                // println!("LOWER-CASE LETTER");
+                // BEGIN IDENTIFIER; PROCEED UNTIL NEXT NON-LOWERCASE CHAR
+                let start_letter = buf[i] as char;
+                let mut identifier:String = start_letter.to_string();
+                i += 1;
+
+                while buf[i] as char >= 'a' && buf[i] as char <= 'z' {
+                    let new_char = buf[i] as char;
+                    identifier.push_str(&new_char.to_string());
+                    i += 1;
+                }
+               
+                println!("{}", identifier);
+            }
+            
+            // HANDLE IDENTIFIER
+
+            else if buf[i] as char >= 'A' && buf[i] as char <= 'Z' {
+                println!("IDENTIFIER CHARACTER");
+            }
+
+            // HANDLE INTEGER
+            
+            else if buf[i] as char >= '0' && buf[i] as char <= '9' {
+                println!("INTEGER");
+            }
+
+
+            // Move to the next byte in the input file
             i += 1;
         }
 
@@ -100,11 +171,11 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     // Testing the arguments to make sure the interpreter is being called correctly.
-    if !core::is_valid_input(args.len()) {
-        core::print_usage();
+    if !lexer::is_valid_input(args.len()) {
+        lexer::print_usage();
     } else {
         // If so, we will begin parsing the input file.
         let ref file:String = args[1];
-        core::parse_file(file);
+        lexer::parse_file(file);
     }
 }
