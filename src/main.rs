@@ -3,19 +3,25 @@
 use std::env;
 
 enum Token {
-    Integer = 31,
-    Identifier = 32,
-    Semicolon = 12,
-    OpAssignment = 14,
-    OpOr = 19,
-    OpEquality = 26,
-    Keyword = 1,
-    Error = -1,
-    EOF = 0,
+    // For syntax errors
+    Error           = -1,
+
+    // Important symbols
+    EOF             = 0,
+    Keyword         = 1,    
+    Semicolon       = 12,
+    Assignment      = 14,
+
+    LogicalOr       = 19,
+    LogicalEquality = 26,
+
+    // User-defined symbols
+    Integer         = 31,
+    Identifier      = 32,
 }
 
-mod core {
-
+mod lexer {
+    
     use Token;
     use std::fs::File;
     use std::io::prelude::*;
@@ -66,87 +72,124 @@ mod core {
             println!("{}", c);
         }*/
 
-        let mut skip_word:usize = 0;
-        let mut skip_flag:bool = false;
+        // let mut skip_word:usize = 0;
+        // let mut skip_flag:bool = false;
 
-        for c in 0 .. buf.len() {
-            if skip_word == 0 {
-                // For debugging: println!("Byte: {}", buf[c] as char);
-                if buf[c] == ';' as u8 {
-                    println!("Token: {} (;)", Token::Semicolon as u8);
+        let mut i:usize = 0;
+
+        while i < buf.len() {
+
+            // println!("{}", buf[i] as char);
+
+            // HANDLE EQUALITY AND ASSIGNMENT
+            
+            if buf[i] as char == '=' {
+                i += 1;
+                if buf[i] as char == '=' {
+                    println!("==");
+                } else {
+                    println!("=");
+                    i -= 1;
                 }
-
-                // TODO: Review code to ensure no index-related panics
-                else if buf[c] == '=' as u8 {
-                    if buf[c + 1] == '=' as u8 {
-                        if !skip_flag {
-                            println!("Token: {} (==)", Token::OpEquality as u8);
-                            skip_flag = !skip_flag;
-                        }
-                    } else {
-                        println!("Token: {} (=)", Token::OpAssignment as u8);
-                    }
-                }
-
-                // TODO: Review code to ensure no index-related panics
-                else if buf[c] == '|' as u8 {
-                    if c < buf.len() - 1 {
-                        if buf[c + 1] == '|' as u8 {
-                            println!("Token: {} (||)", Token::OpOr as u8);
-                            skip_flag = !skip_flag;
-                        } else {
-                            println!("Token: {} (error)", Token::Error as i8);
-                        }   
-                    }
-                }
-                
-                // TODO: Make this prettier
-                else if (buf[c] >= 'a' as u8) && (buf[c] <= 'z' as u8) {
-                    let mut keyword = (buf[c] as char).to_string();
-                    // println!("{}", identifier);
-                    skip_word += 1;
-                    let mut new_index:usize = c + skip_word;
-                    while buf[new_index] != ' ' as u8 {
-                        skip_word += 1;
-                        if new_index < buf.len() {
-                            let addition = buf[new_index] as char;
-                            keyword.push_str(&addition.to_string());
-                        }
-                        new_index += 1;
-                    }
-                    println!("Token: {} ({})", Token::Keyword as u8, keyword);
-                }
-
-                // Identifiers
-                else if (buf[c] >= 'A' as u8) && (buf[c] <= 'Z' as u8) {
-                    let mut identifier = "".to_string();
-                    // println!("{}", identifier);
-                    skip_word += 0;
-                    
-                    let mut new_index:usize = c + skip_word;
-                    while new_index < buf.len() {
-                    
-                        let is_valid_char:bool = buf[new_index] >= 'A' as u8 && buf[new_index] <= 'Z' as u8;
-                        let is_valid_num: bool = buf[new_index] >= '0' as u8 && buf[new_index] <= '9' as u8;
-                        let is_valid_idnt:bool = is_valid_char  || is_valid_num;
-
-                        if is_valid_idnt {
-                            let addition = buf[new_index] as char;
-                            identifier.push_str(&addition.to_string());
-                            new_index += 1;
-                        } else {
-                            break;
-                        }
-                    
-                    }
-                    
-                    println!("Token: {} ({})", Token::Identifier as u8, identifier);
-                    identifier = "".to_string();
-                }
-
-            } else {
-                skip_word -= 1;
             }
+
+            // HANDLE LOGICAL OR
+
+            else if buf[i] as char == '|' {
+                i += 1;
+                if buf[i] as char == '|' {
+                    println!("||");
+                } else {
+                    println!("Error: expected ||, got |");
+                }
+            }
+
+            // HANDLE SEMICOLON
+
+            else if buf[i] as char == ';' {
+                println!(";");
+            }
+
+            // HANDLE KEYWORD
+
+            else if buf[i] as char >= 'a' && buf[i] as char <= 'z' {
+                // println!("LOWER-CASE LETTER");
+                // BEGIN IDENTIFIER; PROCEED UNTIL NEXT NON-LOWERCASE CHAR
+                let start_letter = buf[i] as char;
+                let mut keyword:String = start_letter.to_string();
+                i += 1;
+
+                while buf[i] as char >= 'a' && buf[i] as char <= 'z' {
+                    let new_char = buf[i] as char;
+                    keyword.push_str(&new_char.to_string());
+                    i += 1;
+                }
+               
+                println!("{}", keyword);
+            }
+
+            // HANDLE IDENTIFIER
+
+            else if buf[i] as char >= 'A' && buf[i] as char <= 'Z' {
+                // println!("IDENTIFIER");
+                
+                let start_letter = buf[i] as char;
+                let mut identifier:String = start_letter.to_string();
+
+                let mut char_flag:bool = true;
+                let mut nmbr_flag:bool = true;
+                
+                while (i + 1 < buf.len()) && char_flag {
+                    i += 1;
+                    if buf[i] as char >= 'A' && buf[i] as char <= 'Z' {
+                        let new_char = buf[i] as char;
+                        identifier.push_str(&new_char.to_string());
+                        // i += 1;
+                    } else {
+                        i -= 1;
+                        char_flag = !char_flag;
+                    }
+                }
+
+                while (i + 1 < buf.len()) && nmbr_flag {
+                    i += 1;
+                    if buf[i] as char >= '0' && buf[i] as char <= '9' {
+                        let new_digit = buf[i] as char;
+                        identifier.push_str(&new_digit.to_string());
+                        // i += 1;
+                    } else {
+                        i -= 1;
+                        nmbr_flag = !nmbr_flag;
+                    }
+                }
+
+                // println!("Both complted");
+                println!("{}", identifier);
+            }
+
+            // HANDLE INTEGER
+            
+            else if buf[i] as char >= '0' && buf[i] as char <= '9' {
+                let start_number = buf[i] as char;
+                let mut integer:String = start_number.to_string();
+                
+                while i + 1 < buf.len() {
+                    i += 1;
+                    if buf[i] as char >= '0' && buf[i] as char <= '9' {
+                        let new_digit = buf[i] as char;
+                        integer.push_str(&new_digit.to_string());
+                    } else {
+                        i -= 1;
+                        break;
+                    }
+                }
+
+                println!("{}", integer);
+            }
+
+
+            // Move to the next byte in the input file
+            i += 1;
         }
 
         // buf = s.into_bytes();
@@ -173,11 +216,11 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     // Testing the arguments to make sure the interpreter is being called correctly.
-    if !core::is_valid_input(args.len()) {
-        core::print_usage();
+    if !lexer::is_valid_input(args.len()) {
+        lexer::print_usage();
     } else {
         // If so, we will begin parsing the input file.
         let ref file:String = args[1];
-        core::parse_file(file);
+        lexer::parse_file(file);
     }
 }
