@@ -116,22 +116,55 @@ mod lexer {
                 // println!("LOWER-CASE LETTER");
                 // BEGIN IDENTIFIER; PROCEED UNTIL NEXT NON-LOWERCASE CHAR
                 let start_letter = buf[i] as char;
-                let mut identifier:String = start_letter.to_string();
+                let mut keyword:String = start_letter.to_string();
                 i += 1;
 
                 while buf[i] as char >= 'a' && buf[i] as char <= 'z' {
                     let new_char = buf[i] as char;
-                    identifier.push_str(&new_char.to_string());
+                    keyword.push_str(&new_char.to_string());
                     i += 1;
                 }
                
-                println!("{}", identifier);
+                println!("{}", keyword);
             }
-            
+
             // HANDLE IDENTIFIER
 
             else if buf[i] as char >= 'A' && buf[i] as char <= 'Z' {
-                println!("IDENTIFIER CHARACTER");
+                // println!("IDENTIFIER");
+                
+                let start_letter = buf[i] as char;
+                let mut identifier:String = start_letter.to_string();
+
+                let mut char_flag:bool = true;
+                let mut nmbr_flag:bool = true;
+                
+                while (i + 1 < buf.len()) && char_flag {
+                    i += 1;
+                    if buf[i] as char >= 'A' && buf[i] as char <= 'Z' {
+                        let new_char = buf[i] as char;
+                        identifier.push_str(&new_char.to_string());
+                        // i += 1;
+                    } else {
+                        i -= 1;
+                        char_flag = !char_flag;
+                    }
+                }
+
+                while (i + 1 < buf.len()) && nmbr_flag {
+                    i += 1;
+                    if buf[i] as char >= '0' && buf[i] as char <= '9' {
+                        let new_digit = buf[i] as char;
+                        identifier.push_str(&new_digit.to_string());
+                        // i += 1;
+                    } else {
+                        i -= 1;
+                        nmbr_flag = !nmbr_flag;
+                    }
+                }
+
+                // println!("Both complted");
+                println!("{}", identifier);
             }
 
             // HANDLE INTEGER
