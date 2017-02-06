@@ -20,8 +20,8 @@ enum Token {
     Identifier      = 32,
 }
 
-mod lexer {
-    
+mod lexer { 
+
     use Token;
     use std::fs::File;
     use std::io::prelude::*;
@@ -79,6 +79,19 @@ mod lexer {
 
         while i < buf.len() {
 
+            let next_token:Token = Token::Error;
+
+            match buf[i] as char {
+                ' ' => println!(""),
+                '=' => parse_equal(&buf, &mut i),
+                ';' => parse_semicolon(),
+                '|' => parse_logical_or(),
+                '0' ... '9' => parse_integer(),
+                'a' ... 'z' => parse_keyword(),
+                'A' ... 'Z' => parse_identifier(),
+                          _ => println!("ERROR")
+            }
+        /*
             // println!("{}", buf[i] as char);
 
             // HANDLE EQUALITY AND ASSIGNMENT
@@ -187,13 +200,40 @@ mod lexer {
                 println!("{}", integer);
             }
 
-
+            */
             // Move to the next byte in the input file
             i += 1;
         }
 
         // buf = s.into_bytes();
         buf.clear();
+    }
+
+    fn parse_equal (buf: &Vec<u8>, state: &mut usize) {
+        let i:usize = *state as usize;
+        println!("{}", buf[i]);
+        // Moving the state forward after we have successfully parsed the equality or assignment
+        // *state += 5;
+    }
+
+    fn parse_semicolon () {
+        println!("SEMICOLON");
+    }
+
+    fn parse_logical_or () {
+        println!("OR");
+    }
+
+    fn parse_integer () {
+        println!("INTEGER");
+    }
+
+    fn parse_keyword () {
+        println!("KEYWORD");
+    }
+
+    fn parse_identifier () {
+        println!("IDENTIFIER");
     }
 
     #[cfg(test)]
