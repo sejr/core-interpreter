@@ -116,9 +116,6 @@ mod lexer {
 
     fn parse_equal (buf: &Vec<u8>, state: &mut usize) -> Token {
         let i:usize = *state as usize;
-        println!("{}", buf[i]);
-        // Moving the state forward after we have successfully parsed the equality or assignment
-        // *state += 5;
         
         if buf[i + 1] as char == '=' {
             // We have come across an equality operator.
