@@ -57,7 +57,6 @@ mod tokenizer {
         for token in output_vector {
             match token {
                 Token::Error => exit_err(),
-                Token::Whitespace => print!(""),
                 _ => println!("{}", token as i32),
             }
         }
@@ -100,7 +99,11 @@ mod tokenizer {
                           _ => next_token = Token::Error,
             }
 
-            tokenizer_output.push(next_token);
+            match next_token {
+                Token::Whitespace => print!(""),
+                _ => tokenizer_output.push(next_token),
+            }
+
             i += 1;
 
         }
@@ -266,7 +269,9 @@ mod tokenizer {
             assert_eq!(super::is_valid_input(case_c.len()), false, "Case C should be invalid, but wasn't.");
         }
 
-        fn correctly_tokenizes_test_input_01 () {}
+        fn correctly_tokenizes_test_input_01 () {
+            let test_output_01:Vec<Token> == Vec::new();
+        }
         
         fn correctly_tokenizes_test_input_02 () {}
 
