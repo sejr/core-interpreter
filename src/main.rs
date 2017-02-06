@@ -2,6 +2,7 @@
 
 use std::env;
 
+#[derive(Copy, Clone)]
 enum Token {
     // For syntax errors
     Error           = -1,
@@ -21,7 +22,7 @@ enum Token {
     Identifier      = 32,
 }
 
-mod lexer { 
+mod tokenizer { 
 
     use Token;
     use std::fs::File;
@@ -51,7 +52,18 @@ mod lexer {
         println!("Usage: ./core_interpreter <core-source-file-name>");
     }
 
-    pub fn parse_file(file:&String) {
+    pub fn init_driver(file:&String) {
+        let output_vector:Vec<Token> = parse_file(file);
+        for token in output_vector {
+            match token {
+                Token::Error => exit_err(),
+                Token::Whitespace => print!(""),
+                _ => println!("{}", token as i32),
+            }
+        }
+    }
+
+    fn parse_file(file:&String) -> Vec<Token> {
         /*
          * It is in this parse_file() function that we will do the heavy lifting of opening input
          * files and reading in characters. Those characters will be used to form the designated
@@ -69,16 +81,18 @@ mod lexer {
        
         // Defining the file 'state' which allows us to keep track of the interpreter's progress.
         let mut i:usize = 0;
+        let mut tokenizer_output:Vec<Token> = Vec::new();
+
         while i < buf.len() {
 
-            let mut next_token:Token;
+            let next_token:Token;
 
             // TODO: Add check for whitespace (then ignore if true.) 
             //     ? https://doc.rust-lang.org/std/primitive.char.html#method.is_whitespace
             match buf[i] as char {
                 ' ' => next_token = Token::Whitespace,
+                ';' => next_token = Token::Semicolon,
                 '=' => next_token = parse_equal(&buf, &mut i),
-                ';' => next_token = parse_semicolon(&buf, &mut i),
                 '|' => next_token = parse_logical_or(&buf, &mut i),
                 '0' ... '9' => next_token = parse_integer(&buf, &mut i),
                 'a' ... 'z' => next_token = parse_keyword(&buf, &mut i),
@@ -86,18 +100,14 @@ mod lexer {
                           _ => next_token = Token::Error,
             }
 
-            match next_token {
-                Token::Error => exit_err(),
-                Token::Whitespace => print!(""),
-                _ => println!("{}", next_token as i32),
-            }
-            
-            // Move to the next byte in the input file
+            tokenizer_output.push(next_token);
             i += 1;
+
         }
 
         // buf = s.into_bytes();
         buf.clear();
+        tokenizer_output
     }
 
     fn exit_err () {
@@ -116,12 +126,6 @@ mod lexer {
         
         // Otherwise, it is an assignment token.
         Token::Assignment
-    }
-
-    fn parse_semicolon (buf: &Vec<u8>, state: &mut usize) -> Token  {
-        // Semicolons are very simple tokens and don't require extra validation.
-        // If we find one, we can simply return this token (for now).
-        Token::Semicolon
     }
 
     fn parse_logical_or (buf: &Vec<u8>, state: &mut usize) -> Token {
@@ -160,6 +164,9 @@ mod lexer {
             if buf[i] as char >= '0' && buf[i] as char <= '9' {
                 let new_digit = buf[i] as char;
                 integer.push_str(&new_digit.to_string());
+            } else if (buf[i] as char >= 'a' && buf[i] as char <= 'z') ||
+                      (buf[i] as char >= 'A' && buf[i] as char <= 'z') {
+                return Token::Error;
             } else {
                 i -= 1;
                 break;
@@ -219,7 +226,7 @@ mod lexer {
         let mut char_flag:bool = true;
         let mut nmbr_flag:bool = true;
 
-        while (i + i < buf.len()) && char_flag {
+        while (i + 1 < buf.len()) && char_flag {
             i += 1;
             if buf[i] as char >= 'A' && buf[i] as char <= 'Z' {
                 let new_char = buf[i] as char;
@@ -242,14 +249,14 @@ mod lexer {
         }
 
         *state = i;
-        
+
         Token::Identifier
     }
 
     #[cfg(test)]
     mod test {
         #[test]
-        fn test_is_valid_input() {
+        fn test_is_valid_input () {
             let case_a: Vec<String> = vec!["Hello ".to_string(), "world!".to_string()];
             let case_b: Vec<String> = vec!["This ".to_string(), "won't ".to_string(), "work!".to_string()];
             let case_c: Vec<String> = vec!["Goodbye!".to_string()];
@@ -258,6 +265,27 @@ mod lexer {
             assert_eq!(super::is_valid_input(case_b.len()), false, "Case B should be invalid, but wasn't.");
             assert_eq!(super::is_valid_input(case_c.len()), false, "Case C should be invalid, but wasn't.");
         }
+
+        fn correctly_tokenizes_test_input_01 () {}
+        
+        fn correctly_tokenizes_test_input_02 () {}
+
+        fn correctly_tokenizes_test_input_03 () {}
+
+        fn correctly_tokenizes_test_input_04 () {}
+
+        fn correctly_tokenizes_test_input_05 () {}
+
+        fn correctly_tokenizes_test_input_06 () {}
+
+        fn correctly_tokenizes_test_input_07 () {}
+
+        fn correctly_tokenizes_test_input_08 () {}
+
+        fn correctly_tokenizes_test_input_09 () {}
+
+        fn correctly_tokenizes_test_input_10 () {}
+
     }
 }
 
@@ -266,11 +294,11 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     // Testing the arguments to make sure the interpreter is being called correctly.
-    if !lexer::is_valid_input(args.len()) {
-        lexer::print_usage();
+    if !tokenizer::is_valid_input(args.len()) {
+        tokenizer::print_usage();
     } else {
         // If so, we will begin parsing the input file.
         let ref file:String = args[1];
-        lexer::parse_file(file);
+        tokenizer::init_driver(file);
     }
 }
