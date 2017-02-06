@@ -81,6 +81,8 @@ mod lexer {
 
             let next_token:Token = Token::Error;
 
+            // TODO: Add check for whitespace (then ignore if true.) 
+            //     ? https://doc.rust-lang.org/std/primitive.char.html#method.is_whitespace
             match buf[i] as char {
                 ' ' => println!(""),
                 '=' => parse_equal(&buf, &mut i),
@@ -91,116 +93,7 @@ mod lexer {
                 'A' ... 'Z' => parse_identifier(),
                           _ => println!("ERROR")
             }
-        /*
-            // println!("{}", buf[i] as char);
-
-            // HANDLE EQUALITY AND ASSIGNMENT
             
-            if buf[i] as char == '=' {
-                i += 1;
-                if buf[i] as char == '=' {
-                    println!("==");
-                } else {
-                    println!("=");
-                    i -= 1;
-                }
-            }
-
-            // HANDLE LOGICAL OR
-
-            else if buf[i] as char == '|' {
-                i += 1;
-                if buf[i] as char == '|' {
-                    println!("||");
-                } else {
-                    println!("Error: expected ||, got |");
-                }
-            }
-
-            // HANDLE SEMICOLON
-
-            else if buf[i] as char == ';' {
-                println!(";");
-            }
-
-            // HANDLE KEYWORD
-
-            else if buf[i] as char >= 'a' && buf[i] as char <= 'z' {
-                // println!("LOWER-CASE LETTER");
-                // BEGIN IDENTIFIER; PROCEED UNTIL NEXT NON-LOWERCASE CHAR
-                let start_letter = buf[i] as char;
-                let mut keyword:String = start_letter.to_string();
-                i += 1;
-
-                while buf[i] as char >= 'a' && buf[i] as char <= 'z' {
-                    let new_char = buf[i] as char;
-                    keyword.push_str(&new_char.to_string());
-                    i += 1;
-                }
-               
-                println!("{}", keyword);
-            }
-
-            // HANDLE IDENTIFIER
-
-            else if buf[i] as char >= 'A' && buf[i] as char <= 'Z' {
-                // println!("IDENTIFIER");
-                
-                let start_letter = buf[i] as char;
-                let mut identifier:String = start_letter.to_string();
-
-                let mut char_flag:bool = true;
-                let mut nmbr_flag:bool = true;
-                
-                while (i + 1 < buf.len()) && char_flag {
-                    i += 1;
-                    if buf[i] as char >= 'A' && buf[i] as char <= 'Z' {
-                        let new_char = buf[i] as char;
-                        identifier.push_str(&new_char.to_string());
-                        // i += 1;
-                    } else {
-                        i -= 1;
-                        char_flag = !char_flag;
-                    }
-                }
-
-                while (i + 1 < buf.len()) && nmbr_flag {
-                    i += 1;
-                    if buf[i] as char >= '0' && buf[i] as char <= '9' {
-                        let new_digit = buf[i] as char;
-                        identifier.push_str(&new_digit.to_string());
-                        // i += 1;
-                    } else {
-                        i -= 1;
-                        nmbr_flag = !nmbr_flag;
-                    }
-                }
-
-                // println!("Both complted");
-                println!("{}", identifier);
-            }
-
-            // HANDLE INTEGER
-            
-            else if buf[i] as char >= '0' && buf[i] as char <= '9' {
-                let start_number = buf[i] as char;
-                let mut integer:String = start_number.to_string();
-                
-                while i + 1 < buf.len() {
-                    i += 1;
-                    if buf[i] as char >= '0' && buf[i] as char <= '9' {
-                        let new_digit = buf[i] as char;
-                        integer.push_str(&new_digit.to_string());
-                    } else {
-                        i -= 1;
-                        break;
-                    }
-                }
-
-                println!("{}", integer);
-            }
-
-            */
             // Move to the next byte in the input file
             i += 1;
         }
@@ -209,31 +102,46 @@ mod lexer {
         buf.clear();
     }
 
-    fn parse_equal (buf: &Vec<u8>, state: &mut usize) {
+    fn parse_equal (buf: &Vec<u8>, state: &mut usize) -> Token {
         let i:usize = *state as usize;
         println!("{}", buf[i]);
         // Moving the state forward after we have successfully parsed the equality or assignment
         // *state += 5;
+        
+        Token::LogicalEquality
     }
 
-    fn parse_semicolon () {
-        println!("SEMICOLON");
+    fn parse_semicolon (buf: &Vec<u8>, state: &mut usize) -> Token  {
+        // Semicolons are very simple tokens and don't require extra validation.
+        // If we find one, we can simply return this token (for now).
+        Token::Semicolon
     }
 
-    fn parse_logical_or () {
-        println!("OR");
+    fn parse_logical_or (buf: &Vec<u8>, state: &mut usize) -> Token {
+        // The OR can produce an error token if the proceeding state is not an | character.
+        Token::LogicalOr
     }
 
-    fn parse_integer () {
+    /* 
+     * VALIDATED TOKENS
+     *
+     * The tokens below require a little extra validation. Specifically, they require whitespace
+     * or one of the proceeding tokens in order to be identified correctly.
+     */
+
+    fn parse_integer (buf: &Vec<u8>, state: &mut usize) -> Token {
         println!("INTEGER");
+        Token::Integer
     }
 
-    fn parse_keyword () {
+    fn parse_keyword (buf: &Vec<u8>, state: &mut usize) -> Token {
         println!("KEYWORD");
+        Token::Keyword
     }
 
-    fn parse_identifier () {
+    fn parse_identifier (buf: &Vec<u8>, state: &mut usize) -> Token {
         println!("IDENTIFIER");
+        Token::Identifier
     }
 
     #[cfg(test)]
