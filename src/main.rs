@@ -66,17 +66,8 @@ mod lexer {
 
         // Iterating through the characters of the file . . .        
         f.read_to_end(&mut buf).expect("read_to_end failed");
-        
-        /*
-        // Throwing them all into a string because I don't care about memory
-        let s = String::from_utf8(buf).expect("from_utf8 failed");
-        for c in s.chars() {
-            println!("{}", c);
-        }*/
-
-        // let mut skip_word:usize = 0;
-        // let mut skip_flag:bool = false;
-
+       
+        // Defining the file 'state' which allows us to keep track of the interpreter's progress.
         let mut i:usize = 0;
         while i < buf.len() {
 
