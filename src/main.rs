@@ -258,6 +258,9 @@ mod tokenizer {
 
     #[cfg(test)]
     mod test {
+        
+        use Token;
+        
         #[test]
         fn test_is_valid_input () {
             let case_a: Vec<String> = vec!["Hello ".to_string(), "world!".to_string()];
