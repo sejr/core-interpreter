@@ -270,7 +270,7 @@ mod tokenizer {
         }
 
         fn correctly_tokenizes_test_input_01 () {
-            let test_output_01:Vec<Token> == Vec::new();
+            let test_output_01:Vec<Token> = Vec::new();
         }
         
         fn correctly_tokenizes_test_input_02 () {}
