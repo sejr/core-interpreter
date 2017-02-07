@@ -15,11 +15,26 @@ git clone https://github.com/sejr/core-interpreter.git
 
 # Navigate to the cloned directory
 cd core-interpreter
+```
 
+### Build for Debugging
+
+``` bash
 # Build the core interpreter
 cargo build
 
 # Run it
 cd target/debug
+./core-interpreter <core-source-file-name>
+```
+
+### Build for Release
+
+```bash
+# Build the core interpreter
+cargo build --release
+
+# Run it
+cd target/release
 ./core-interpreter <core-source-file-name>
 ```
