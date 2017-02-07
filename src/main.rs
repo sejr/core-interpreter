@@ -2,7 +2,7 @@
 
 use std::env;
 
-#[derive(Copy, Clone)]
+#[derive(PartialEq, Copy, Clone)]
 enum Token {
     // For syntax errors
     Error           = -1,
@@ -90,6 +90,9 @@ mod tokenizer {
             //     ? https://doc.rust-lang.org/std/primitive.char.html#method.is_whitespace
             match buf[i] as char {
                 ' ' => next_token = Token::Whitespace,
+                '\n'=> next_token = Token::Whitespace,
+                '\r'=> next_token = Token::Whitespace,
+                '\t'=> next_token = Token::Whitespace,
                 ';' => next_token = Token::Semicolon,
                 '=' => next_token = parse_equal(&buf, &mut i),
                 '|' => next_token = parse_logical_or(&buf, &mut i),
@@ -202,6 +205,9 @@ mod tokenizer {
             if buf[i] as char >= 'a' && buf[i] as char <= 'z' {
                 let new_char = buf[i] as char;
                 keyword.push_str(&new_char.to_string());
+            } else if (buf[i] as char >= 'A' && buf[i] as char <= 'Z') ||
+                      (buf[i] as char >= '0' && buf[i] as char <= '9') {
+                return Token::Error;
             } else {
                 i -= 1;
                 break;
@@ -234,6 +240,9 @@ mod tokenizer {
             if buf[i] as char >= 'A' && buf[i] as char <= 'Z' {
                 let new_char = buf[i] as char;
                 identifier.push_str(&new_char.to_string());
+            } else if (buf[i] as char >= 'a' && buf[i] as char <= 'z') ||
+                      (buf[i] as char >= '0' && buf[i] as char <= '9') {
+                return Token::Error;
             } else {
                 i -= 1;
                 char_flag = !char_flag;
@@ -245,6 +254,9 @@ mod tokenizer {
             if buf[i] as char >= '0' && buf[i] as char <= '9' {
                 let new_digit = buf[i] as char;
                 identifier.push_str(&new_digit.to_string());
+            } else if (buf[i] as char >= 'a' && buf[i] as char <= 'z') ||
+                      (buf[i] as char >= 'A' && buf[i] as char <= 'z') {
+                return Token::Error;
             } else {
                 i -= 1;
                 nmbr_flag = !nmbr_flag;
@@ -273,7 +285,11 @@ mod tokenizer {
         }
 
         fn correctly_tokenizes_test_input_01 () {
-            let test_output_01:Vec<Token> = Vec::new();
+            let test_file:String = "test/test01".to_string();
+            let test_output_01:Vec<Token> = super::parse_file(&test_file);
+            /* assert_eq!(test_output_01, [
+                Token::
+            ]); */
         }
         
         fn correctly_tokenizes_test_input_02 () {}
