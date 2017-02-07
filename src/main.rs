@@ -40,9 +40,9 @@ mod tokenizer {
          */
         if arg_count != 2 {
             return false;
-        } else {
-            return true;
         }
+
+        true
     }
 
     pub fn print_usage() {
