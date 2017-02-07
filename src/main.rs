@@ -238,7 +238,7 @@ mod tokenizer {
             if buf[i] as char >= 'A' && buf[i] as char <= 'Z' {
                 let new_char = buf[i] as char;
                 identifier.push_str(&new_char.to_string());
-            } else if (buf[i] as char >= 'a' && buf[i] as char <= 'z') {
+            } else if buf[i] as char >= 'a' && buf[i] as char <= 'z' {
                 return Token::Error;
             } else {
                 i -= 1;
