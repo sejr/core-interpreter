@@ -222,7 +222,6 @@ mod tokenizer {
 
     fn parse_identifier (buf: &Vec<u8>, state: &mut usize) -> Token {
         let mut i:usize = *state as usize;
-
         // Validating separation between tokens.
         if (buf[i - 1] as char >= 'a' && buf[i - 1] as char <= 'z') ||
            (buf[i - 1] as char >= '0' && buf[i - 1] as char <= '9') {
@@ -231,7 +230,6 @@ mod tokenizer {
 
         let start_letter = buf[i] as char;
         let mut identifier:String = start_letter.to_string();
-
         let mut char_flag:bool = true;
         let mut nmbr_flag:bool = true;
 
@@ -240,8 +238,7 @@ mod tokenizer {
             if buf[i] as char >= 'A' && buf[i] as char <= 'Z' {
                 let new_char = buf[i] as char;
                 identifier.push_str(&new_char.to_string());
-            } else if (buf[i] as char >= 'a' && buf[i] as char <= 'z') ||
-                      (buf[i] as char >= '0' && buf[i] as char <= '9') {
+            } else if (buf[i] as char >= 'a' && buf[i] as char <= 'z') {
                 return Token::Error;
             } else {
                 i -= 1;
