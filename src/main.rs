@@ -2,7 +2,7 @@
 
 use std::env;
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 enum Token {
     // For syntax errors
     Error           = -1,
@@ -104,7 +104,14 @@ mod tokenizer {
 
             match next_token {
                 Token::Whitespace => print!(""),
-                _ => tokenizer_output.push(next_token),
+                _ => {
+                    if next_token == Token::Error {
+                        tokenizer_output.push(next_token);
+                        break;
+                    } else {
+                        tokenizer_output.push(next_token);
+                    }
+                }
             }
 
             i += 1;
@@ -271,7 +278,7 @@ mod tokenizer {
         use Token;
         
         #[test]
-        fn test_is_valid_input () {
+        fn correctly_verifies_argument_count () {
             let case_a: Vec<String> = vec!["Hello ".to_string(), "world!".to_string()];
             let case_b: Vec<String> = vec!["This ".to_string(), "won't ".to_string(), "work!".to_string()];
             let case_c: Vec<String> = vec!["Goodbye!".to_string()];
@@ -281,32 +288,155 @@ mod tokenizer {
             assert_eq!(super::is_valid_input(case_c.len()), false, "Case C should be invalid, but wasn't.");
         }
 
+        #[test]
         fn correctly_tokenizes_test_input_01 () {
             let test_file:String = "test/test01".to_string();
             let test_output_01:Vec<Token> = super::parse_file(&test_file);
-            /* assert_eq!(test_output_01, [
-                Token::
-            ]); */
+            assert_eq!(test_output_01, vec![
+                Token::Keyword,
+                Token::Keyword,
+                Token::Identifier,
+                Token::Semicolon,
+                Token::Keyword,
+                Token::Identifier,
+                Token::LogicalEquality,
+                Token::Assignment,
+                Token::Integer,
+                Token::Semicolon,
+                Token::Identifier,
+                Token::LogicalOr,
+            ]);
         }
         
-        fn correctly_tokenizes_test_input_02 () {}
+        #[test]
+        fn correctly_tokenizes_test_input_02 () {
+            let test_file:String = "test/test02".to_string();
+            let test_output_02:Vec<Token> = super::parse_file(&test_file);
+            assert_eq!(test_output_02, vec![
+                Token::Keyword,
+                Token::Keyword,
+                Token::Identifier,
+                Token::Semicolon,
+                Token::Keyword,
+                Token::Identifier,
+                Token::LogicalEquality,
+                Token::Assignment,
+                Token::Error,
+            ]);
+        }
 
-        fn correctly_tokenizes_test_input_03 () {}
+        #[test]
+        fn correctly_tokenizes_test_input_03 () {
+            let test_file:String = "test/test03".to_string();
+            let test_output_03:Vec<Token> = super::parse_file(&test_file);
+            assert_eq!(test_output_03, vec![
+                Token::Keyword,
+                Token::Keyword,
+                Token::Keyword,
+                Token::Keyword,
+                Token::Keyword,
+                Token::Keyword,
+                Token::Keyword,
+                Token::Keyword,
+                Token::Keyword,
+                Token::Keyword,
+                Token::LogicalOr,
+                Token::Assignment,
+                Token::Semicolon,
+                Token::LogicalEquality,
+                Token::Identifier,
+                Token::Integer,
+                Token::Identifier,
+                Token::LogicalEquality,
+                Token::LogicalEquality,
+                Token::Integer,
+                Token::LogicalOr,
+                Token::LogicalOr,
+                Token::LogicalEquality,
+                Token::LogicalEquality,
+                Token::Assignment,
+                Token::Identifier,
+                Token::Semicolon,
+                Token::Semicolon,
+                Token::Semicolon,
+                Token::Assignment,
+                Token::Integer,
+                Token::Keyword,
+                Token::Semicolon,
+            ]);
+        }
 
-        fn correctly_tokenizes_test_input_04 () {}
+        #[test]
+        fn correctly_tokenizes_test_input_04 () {
+            let test_file:String = "test/test04".to_string();
+            let test_output_04:Vec<Token> = super::parse_file(&test_file);
+            assert_eq!(test_output_04, vec![
+                Token::LogicalEquality,
+                Token::Assignment,
+                Token::Error,
+            ]);
+        }
 
-        fn correctly_tokenizes_test_input_05 () {}
+        #[test]
+        fn correctly_tokenizes_test_input_05 () {
+            let test_file:String = "test/test05".to_string();
+            let test_output_05:Vec<Token> = super::parse_file(&test_file);
+            assert_eq!(test_output_05, vec![
+                Token::LogicalOr,
+                Token::Error,
+            ]);
+        }
 
-        fn correctly_tokenizes_test_input_06 () {}
+        #[test]
+        fn correctly_tokenizes_test_input_06 () {
+            let test_file:String = "test/test06".to_string();
+            let test_output_06:Vec<Token> = super::parse_file(&test_file);
+            assert_eq!(test_output_06, vec![
+                Token::LogicalOr,
+                Token::Error,
+            ]);
+        }
 
-        fn correctly_tokenizes_test_input_07 () {}
+        #[test]
+        fn correctly_tokenizes_test_input_07 () {
+            let test_file:String = "test/test07".to_string();
+            let test_output_07:Vec<Token> = super::parse_file(&test_file);
+            assert_eq!(test_output_07, vec![
+                Token::Semicolon,
+                Token::Semicolon,
+                Token::Error,
+            ]);
+        }
 
-        fn correctly_tokenizes_test_input_08 () {}
+        #[test]
+        fn correctly_tokenizes_test_input_08 () {
+            let test_file:String = "test/test08".to_string();
+            let test_output_08:Vec<Token> = super::parse_file(&test_file);
+            assert_eq!(test_output_08, vec![
+                Token::Semicolon,
+                Token::Error,
+            ]);
+        }
 
-        fn correctly_tokenizes_test_input_09 () {}
+        #[test]
+        fn correctly_tokenizes_test_input_09 () {
+            let test_file:String = "test/test09".to_string();
+            let test_output_09:Vec<Token> = super::parse_file(&test_file);
+            assert_eq!(test_output_09, vec![
+                Token::Semicolon,
+                Token::Error,
+            ]);
+        }
 
-        fn correctly_tokenizes_test_input_10 () {}
-
+        #[test]
+        fn correctly_tokenizes_test_input_10 () {
+            let test_file:String = "test/test10".to_string();
+            let test_output_10:Vec<Token> = super::parse_file(&test_file);
+            assert_eq!(test_output_10, vec![
+                Token::Semicolon,
+                Token::Error,
+            ]);
+        }
     }
 }
 
