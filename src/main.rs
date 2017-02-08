@@ -4,22 +4,50 @@ use std::env;
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 enum Token {
-    // For syntax errors
-    Error           = -1,
+    // For errors
+    Error               = -1,
 
-    // Important symbols
-    EOF             = 0,
-    Keyword         = 1,
-    Whitespace      = 99,
-    Semicolon       = 12,
-    Assignment      = 14,
+    // Reserved words
+    Whitespace          = 0,
+    Program             = 1,
+    Begin               = 2,
+    End                 = 3,
+    Int                 = 4,
+    If                  = 5,
+    Then                = 6,
+    Else                = 7,
+    While               = 8,
+    Loop                = 9,
+    Read                = 10,
+    Write               = 11,
 
-    LogicalOr       = 19,
-    LogicalEquality = 26,
+    // Special symbols
+    Semicolon           = 12,
+    Comma               = 13,
+    Assignment          = 14,
+    Exclamation         = 15,
+    LeftSquare          = 16,
+    RightSquare         = 17,
+    LogicalAnd          = 18,
+    LogicalOr           = 19,
+    LeftParen           = 20,
+    RightParen          = 21,
+    Addition            = 22,
+    Subtraction         = 23,
+    Multiplication      = 24,
+    LogicalInequality   = 25,
+    LogicalEquality     = 26,
+    LessThan            = 27,
+    GreaterThan         = 28,
+    LessThanEqual       = 29,
+    GreaterThanEqual    = 30,
 
-    // User-defined symbols
-    Integer         = 31,
-    Identifier      = 32,
+    // User-defined
+    Integer             = 31,
+    Identifier          = 32,
+    
+    // Other
+    EOF                 = 33,
 }
 
 mod tokenizer { 
