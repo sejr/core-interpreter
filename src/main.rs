@@ -114,18 +114,38 @@ mod tokenizer {
 
             let next_token:Token;
 
-            // TODO: Add check for whitespace (then ignore if true.) 
-            //     ? https://doc.rust-lang.org/std/primitive.char.html#method.is_whitespace
             match buf[i] as char {
+                
+                // Whitespace characters as defined by Rust language
                 ' ' => next_token = Token::Whitespace,
                 '\n'=> next_token = Token::Whitespace,
                 '\r'=> next_token = Token::Whitespace,
                 '\t'=> next_token = Token::Whitespace,
+                
+                // Special tokens for parsing statements
                 ';' => next_token = Token::Semicolon,
+                ',' => next_token = Token::Comma,
+                '[' => next_token = Token::LeftSquare,
+                ']' => next_token = Token::RightSquare,
+                '(' => next_token = Token::LeftParen,
+                ')' => next_token = Token::RightParen,
+                
+                // Mathematical operators
+                '+' => next_token = Token::Addition,
+                '-' => next_token = Token::Subtraction,
+                '*' => next_token = Token::Multiplication,
+
+                // Logical operators
                 '=' => next_token = parse_equal(&buf, &mut i),
+                '!' => next_token = parse_inequal(&buf, &mut i),            // TODO
+                '<' => next_token = parse_lt_lte(&buf, &mut i),             // TODO
+                '>' => next_token = parse_gt_gte(&buf, &mut i),             // TODO 
                 '|' => next_token = parse_logical_or(&buf, &mut i),
+                '&' => next_token = parse_logical_and(&buf, &mut i),        // TODO
+
+                // User-defined values
                 '0' ... '9' => next_token = parse_integer(&buf, &mut i),
-                'a' ... 'z' => next_token = parse_keyword(&buf, &mut i),
+                'a' ... 'z' => next_token = parse_keyword(&buf, &mut i),    // TODO (Modify)
                 'A' ... 'Z' => next_token = parse_identifier(&buf, &mut i),
                           _ => next_token = Token::Error,
             }
