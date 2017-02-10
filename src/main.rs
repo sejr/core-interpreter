@@ -166,6 +166,8 @@ mod tokenizer {
 
         }
 
+        tokenizer_output.push(Token::EOF);
+
         // buf = s.into_bytes();
         buf.clear();
         tokenizer_output
@@ -199,6 +201,46 @@ mod tokenizer {
         
         // For any other scenario, we fail to validate OR token and return error.
         Token::Error
+    }
+
+    fn parse_logical_and (buf: &Vec<u8>, state: &mut usize) -> Token {
+        let i:usize = *state as usize;
+        if buf[i + 1] as char == '&' {
+            *state += 1;
+            return Token::LogicalAnd;
+        }
+        
+        Token::Error
+    }
+
+    fn parse_inequal(buf: &Vec<u8>, state: &mut usize) -> Token {
+        let i:usize = *state as usize;
+        if buf[i + 1] as char == '=' {
+            *state += 1;
+            return Token::LogicalInequality;
+        }
+
+        Token::Exclamation
+    }
+
+    fn parse_lt_lte(buf: &Vec<u8>, state: &mut usize) -> Token {
+        let i:usize = *state as usize;
+        if buf[i + 1] as char == '=' {
+            *state +=1;
+            return Token::LessThanEqual;
+        }
+
+        Token::LessThan
+    }
+
+    fn parse_gt_gte(buf: &Vec<u8>, state: &mut usize) -> Token {
+        let i:usize = *state as usize;
+        if buf[i + 1] as char == '=' {
+            *state +=1;
+            return Token::GreaterThanEqual;
+        }
+
+        Token::GreaterThan
     }
 
     /* 
@@ -269,10 +311,23 @@ mod tokenizer {
             }
         }
 
-        // Update the state of our buffer.
+        // Update the state of our buffer.        
         *state = i;
 
-        Token::Keyword
+        match keyword.as_ref() {
+            "program"   => return Token::Program,
+            "begin"     => return Token::Begin,
+            "end"       => return Token::End,
+            "int"       => return Token::Int,
+            "if"        => return Token::If,
+            "then"      => return Token::Then,
+            "else"      => return Token::Else,
+            "while"     => return Token::While,
+            "loop"      => return Token::Loop,
+            "read"      => return Token::Read,
+            "write"     => return Token::Write,
+            _           => return Token::Error
+        }
     }
 
     fn parse_identifier (buf: &Vec<u8>, state: &mut usize) -> Token {
@@ -321,9 +376,7 @@ mod tokenizer {
     }
 
     #[cfg(test)]
-    mod test {
-        
-        use Token;
+    mod test {  
         
         #[test]
         fn correctly_verifies_argument_count () {
