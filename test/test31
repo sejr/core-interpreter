@@ -1,0 +1,18 @@
+program
+	int X2, X;
+begin
+	X2 = 5;
+	write X2;
+	if (X2==X2) then
+		while [(X2 >= 500) && (X2 < 1000)			] loop
+			write X2;
+			X2 = X2 - 5	;			
+		end;		
+		if (X==0) then
+			X = X2;
+		else
+			X = X - 1;
+		end;
+		write X2;
+	end;
+end
