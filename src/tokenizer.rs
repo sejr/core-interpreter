@@ -1,3 +1,5 @@
+//! The tokenizer takes the Core source file and converts it to a vector of parsable Tokens.
+
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
@@ -51,6 +53,19 @@ enum Token {
     EOF                 = 33,
 }
 
+/// Verifies that the correct number (2) of arguments were passed.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use tokenizer;
+/// 
+/// if tokenizer::is_valid_input(2) {
+///     // Interpreter was called correctly.
+/// } else {
+///     // Interpreter was not called correctly.
+/// }
+/// ```
 pub fn is_valid_input(arg_count:usize) -> bool {
     /*
      * Takes an unsigned integer as input, which corresponds to the number of arguments
@@ -66,6 +81,15 @@ pub fn is_valid_input(arg_count:usize) -> bool {
     true
 }
 
+/// Informs the user of how to invoke the interpreter.
+/// 
+/// # Examples
+/// 
+/// use tokenizer;
+/// 
+/// if tokenizer::is_valid_input(4) {
+///     
+/// }
 pub fn print_usage() {
     /*
      * This is a simple function that helps the user understand how to use our interpreter.
