@@ -1,5 +1,6 @@
 use std::env;
 mod tokenizer;
+mod parser;
 
 fn main() {
     // Fetching the arguments to get the input file name.

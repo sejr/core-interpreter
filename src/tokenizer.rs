@@ -4,10 +4,11 @@ use std::fs::File;
 use std::fmt;
 use std::io::prelude::*;
 use std::io::BufReader;
-use std::process;
+
+use parser;
 
 #[derive(Debug, PartialEq, Clone)]
-enum Token {
+pub enum Token {
     // For errors
     Error,
 
@@ -106,12 +107,15 @@ pub fn print_usage() {
 
 pub fn init_driver(file: &String) {
     let output_vector: Vec<Token> = tokenize_file(file);
-    for token in output_vector {
-        match token {
-            Token::Error => exit_err(),
-            _ => println!("{}", token),
-        }
-    }
+
+    parser::init_parser(output_vector.clone());
+
+    // for token in output_vector {
+    //     match token {
+    //         Token::Error => exit_err(),
+    //         _ => println!("{}", token),
+    //     }
+    // }
 }
 
 fn tokenize_file(file: &String) -> Vec<Token> {
@@ -195,11 +199,6 @@ fn tokenize_file(file: &String) -> Vec<Token> {
     // buf = s.into_bytes();
     buf.clear();
     tokenizer_output
-}
-
-fn exit_err() {
-    println!("Error: Illegal token encountered.");
-    process::exit(-1);
 }
 
 fn tokenize_equal(buf: &Vec<u8>, state: &mut usize) -> Token {
