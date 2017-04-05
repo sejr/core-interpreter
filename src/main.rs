@@ -10,7 +10,7 @@ fn main() {
         tokenizer::print_usage();
     } else {
         // If so, we will begin parsing the input file.
-        let ref file:String = args[1];
+        let ref file: String = args[1];
         tokenizer::init_driver(file);
     }
 }
