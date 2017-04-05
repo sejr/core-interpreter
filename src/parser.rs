@@ -171,19 +171,110 @@ fn parse_if(mut tree: ParseTree) -> ParseTree {
     // if <COND> then <STMT SEQ> end;
     // if <COND> then <STMT SEQ> else <STMT SEQ> end;
 
-    tree
+    let mut cond_result: (bool, ParseTree);
+    let mut stmt_result: ParseTree;
+
+    match tree.tokens[tree.state as usize].clone() {
+        Token::If => {
+            tree.state = tree.state + 1;
+            cond_result = parse_cond(tree);
+            stmt_result = parse_stmt_seq(cond_result.1);
+            match stmt_result.tokens[stmt_result.state as usize].clone() {
+                Token::Then => {
+                    stmt_result.state = stmt_result.state + 1;
+                    stmt_result = parse_stmt_seq(stmt_result);
+                    match stmt_result.tokens[stmt_result.state as usize].clone() {
+                        Token::End => {
+                            stmt_result.state = stmt_result.state + 1;
+                            match stmt_result.tokens[stmt_result.state as usize].clone() {
+                                Token::Semicolon => {
+                                    stmt_result.state = stmt_result.state + 1;
+                                },
+                                _ => panic!("parse_if: expected ';'")
+                            }
+                        },
+                        Token::Else => {
+                            stmt_result.state = stmt_result.state + 1;
+                            stmt_result = parse_stmt_seq(stmt_result);
+                            match stmt_result.tokens[stmt_result.state as usize].clone() {
+                                Token::End => {
+                                    stmt_result.state = stmt_result.state + 1;
+                                    match stmt_result.tokens[stmt_result.state as usize].clone() {
+                                        Token::Semicolon => {
+                                            stmt_result.state = stmt_result.state + 1;
+                                        },
+                                        _ => panic!("parse_if: expected ';'")
+                                    }
+                                },
+                                _ => panic!("parse_if: expected 'end'")
+                            }
+                        },
+                        _ => panic!("parse_if: expected 'end' or 'else'")
+                    }
+                },
+                _ => panic!("parse_if: expected 'then'")
+            }
+        },
+        _ => panic!("parse_if: expected 'if'")
+    }
+
+    stmt_result
 }
 
 #[allow(dead_code)]
 fn parse_loop(mut tree: ParseTree) -> ParseTree {
     // while <COND> loop <STMT SEQ> end;
 
-    tree
+    let mut cond_result: (bool, ParseTree);
+    let mut stmt_result: ParseTree;
+
+    match tree.tokens[tree.state as usize].clone() {
+        Token::While => {
+            tree.state = tree.state + 1;
+            cond_result = parse_cond(tree);
+            match cond_result.1.tokens[cond_result.1.state as usize].clone() {
+                Token::Loop => {
+                    cond_result.1.state = cond_result.1.state + 1;
+                    stmt_result = parse_stmt_seq(cond_result.1);
+                    match stmt_result.tokens[stmt_result.state as usize].clone() {
+                        Token::End => {
+                            stmt_result.state = stmt_result.state + 1;
+                            match stmt_result.tokens[stmt_result.state as usize].clone() {
+                                Token::Semicolon => {
+                                    stmt_result.state = stmt_result.state + 1;
+                                },
+                                _ => panic!("parse_loop: expected ';'")
+                            }
+                        },
+                        _ => panic!("parse_loop: expected 'end'")
+                    }
+                },
+                _ => panic!("parse_loop: expected 'loop'")
+            }
+        },
+        _ => panic!("parse_loop: expected 'while'")
+    }
+
+    stmt_result
 }
 
 #[allow(dead_code)]
 fn parse_in(mut tree: ParseTree) -> ParseTree {
     // read <ID LIST>;
+
+    match tree.tokens[tree.state as usize].clone() {
+        Token::Read => {
+            tree.state = tree.state + 1;
+            tree = parse_id_list(tree);
+            match tree.tokens[tree.state as usize].clone() {
+                Token::Semicolon => {
+                    tree.state = tree.state + 1;
+                },
+                _ => panic!("parse_in: expected ';'")
+            }
+        },
+        _ => panic!("parse_in: expected 'read'")
+    }
 
     tree
 }
@@ -192,17 +283,31 @@ fn parse_in(mut tree: ParseTree) -> ParseTree {
 fn parse_out(mut tree: ParseTree) -> ParseTree {
     // write <ID LIST>;
 
+    match tree.tokens[tree.state as usize].clone() {
+        Token::Write => {
+            tree.state = tree.state + 1;
+            tree = parse_id_list(tree);
+            match tree.tokens[tree.state as usize].clone() {
+                Token::Semicolon => {
+                    tree.state = tree.state + 1;
+                },
+                _ => panic!("parse_out: expected ';'")
+            }
+        },
+        _ => panic!("parse_out: expected 'write'")
+    }
+
     tree
 }
 
 #[allow(dead_code)]
-fn parse_cond(mut tree: ParseTree) -> ParseTree {
+fn parse_cond(mut tree: ParseTree) -> (bool, ParseTree) {
     // <COMP>
     // !<COMP>
     // [<COND> && <COND>]
     // [<COND> || <COND>]
 
-    tree
+    (false, tree)
 }
 
 #[allow(dead_code)]
