@@ -1,3 +1,5 @@
+// TODO: Create parse tree object that contains tokens and other stuff.
+
 fn parse_prog() {
     // program <DECL SEQ> begin <STMT SEQ> end
 }

@@ -47,7 +47,7 @@ enum Token {
     GreaterThanEqual,
 
     // User-defined
-    Integer,
+    Integer(i32),
     Identifier(String),
 
     // Other
@@ -303,7 +303,10 @@ fn tokenize_integer(buf: &Vec<u8>, state: &mut usize) -> Token {
     // Update the state of our buffer.
     *state = i;
 
-    Token::Integer
+    // For a more detailed token
+    let integer_result = integer.parse().unwrap();
+
+    Token::Integer(integer_result)
 }
 
 fn tokenize_keyword(buf: &Vec<u8>, state: &mut usize) -> Token {
