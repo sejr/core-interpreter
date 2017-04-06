@@ -14,6 +14,7 @@ struct ParseTree {
     memory: HashMap<String, i32>,
     current_statement: String,
     statements: Vec<String>,
+    context: Vec<String>,
     state: u32,
     depth: u32
 }
@@ -99,6 +100,7 @@ pub fn init_parser(file_tokens: Vec<Token>, stdin: Vec<i32>) {
         memory: HashMap::new(),
         current_statement: "".to_string(),
         statements: Vec::new(),
+        context: Vec::new(),
         state: 0,
         depth: 0
     };
@@ -134,7 +136,6 @@ fn parse_prog(mut tree: &mut ParseTree) {
             if tree.get_token().eq(&Token::End) {
                 tree.ascend();
                 tree.push_statement("end".to_string());
-                tree.display_variables();
             } else {
                 panic!("parse_prog: expected 'end'");
             }
@@ -342,10 +343,18 @@ fn parse_in(mut tree: &mut ParseTree) {
 
     // read <ID LIST>;
 
+    tree.context.clear(); // New context
     tree.current_statement.push_str("read ");
     tree.next(); // eating the 'read' token
 
-    parse_id_list(&mut tree);
+    parse_id_list(&mut tree); // Filling context
+
+    // We are actually doing the reading here!
+    for id in tree.context.clone() {
+        let val: i32 = tree.read_stdin();
+        tree.insert_variable(id, val);
+    }
+
     if tree.get_token().eq(&Token::Semicolon) {
         tree.current_statement.push(';');
         tree.fetch_current_statement();
@@ -536,7 +545,7 @@ fn parse_comp_op(mut tree: &mut ParseTree) {
 fn parse_id(mut tree: &mut ParseTree) {
     let identifier: String = tree.retrieve_identifier();
     tree.current_statement.push_str(&identifier);
-    tree.insert_variable(identifier, 0);
+    tree.context.push(identifier.clone());
     tree.next();
 }
 
