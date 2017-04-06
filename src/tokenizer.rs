@@ -4,6 +4,7 @@ use std::fs::File;
 use std::fmt;
 use std::io::prelude::*;
 use std::io::BufReader;
+use std::process;
 
 use parser;
 
@@ -61,6 +62,11 @@ impl fmt::Display for Token {
     }
 }
 
+fn exit_err () {
+    println!("Error: Illegal token encountered.");
+    process::exit(-1);
+}
+
 /// Verifies that the correct number (2) of arguments were passed.
 ///
 /// # Examples
@@ -110,12 +116,12 @@ pub fn init_driver(file: &String) {
 
     parser::init_parser(output_vector.clone());
 
-    // for token in output_vector {
-    //     match token {
-    //         Token::Error => exit_err(),
-    //         _ => println!("{}", token),
-    //     }
-    // }
+    for token in output_vector {
+        match token {
+            Token::Error => exit_err(),
+            _ => println!("{}", token),
+        }
+    }
 }
 
 fn tokenize_file(file: &String) -> Vec<Token> {
