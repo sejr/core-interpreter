@@ -12,6 +12,7 @@ fn main() {
     } else {
         // If so, we will begin parsing the input file.
         let ref file: String = args[1];
-        tokenizer::init_driver(file);
+        let ref stdin: String = args[2];
+        tokenizer::init_driver(file, stdin);
     }
 }

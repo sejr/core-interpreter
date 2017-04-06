@@ -10,6 +10,7 @@ use std::collections::HashMap;
 #[derive(Clone)]
 struct ParseTree {
     tokens: Vec<Token>,
+    input_stream: Vec<i32>,
     memory: HashMap<String, i32>,
     current_statement: String,
     statements: Vec<String>,
@@ -33,6 +34,10 @@ impl ParseTree {
                 panic!("ParseTree.retrieve_identifier: token is not identifier");
             }
         }
+    }
+
+    fn read_stdin(&mut self) -> i32 {
+        return self.input_stream.remove(0);
     }
 
     fn retrieve_integer(&mut self) -> &i32 {
@@ -71,11 +76,11 @@ impl ParseTree {
     }
 
     fn display_variables(&mut self) {
-        // println!("\nVariables updated. Shown below.");
-        // for (identifier, value) in &self.memory {
-        //     println!("{}: {}", identifier, value);
-        // }
-        // println!("");
+        println!("\nVariables updated. Shown below.");
+        for (identifier, value) in &self.memory {
+            println!("{}: {}", identifier, value);
+        }
+        println!("");
     }
 
     fn descend(&mut self) {
@@ -87,9 +92,10 @@ impl ParseTree {
     }
 }
 
-pub fn init_parser(file_tokens: Vec<Token>) {
+pub fn init_parser(file_tokens: Vec<Token>, stdin: Vec<i32>) {
     let mut this_parse_tree = ParseTree {
         tokens: file_tokens.clone(),
+        input_stream: stdin.clone(),
         memory: HashMap::new(),
         current_statement: "".to_string(),
         statements: Vec::new(),
@@ -128,6 +134,7 @@ fn parse_prog(mut tree: &mut ParseTree) {
             if tree.get_token().eq(&Token::End) {
                 tree.ascend();
                 tree.push_statement("end".to_string());
+                tree.display_variables();
             } else {
                 panic!("parse_prog: expected 'end'");
             }
@@ -209,11 +216,6 @@ fn parse_stmt_seq(mut tree: &mut ParseTree) {
     if match_flag {
         parse_stmt_seq(&mut tree);
     }
-
-    // if id_flag {
-    //     id_flag = false;
-    //     parse_stmt_seq(&mut tree);
-    // }
 }
 
 fn parse_id_list(mut tree: &mut ParseTree) {
@@ -535,7 +537,6 @@ fn parse_id(mut tree: &mut ParseTree) {
     let identifier: String = tree.retrieve_identifier();
     tree.current_statement.push_str(&identifier);
     tree.insert_variable(identifier, 0);
-    tree.display_variables();
     tree.next();
 }
 
