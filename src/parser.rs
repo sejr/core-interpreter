@@ -258,11 +258,13 @@ fn parse_if(mut tree: &mut ParseTree) {
     // if <COND> then <STMT SEQ> else <STMT SEQ> end;
 
     tree.current_statement.push_str("if ");
+    tree.next();
     parse_cond(&mut tree);
     if tree.get_token().eq(&Token::Then) {
         tree.current_statement.push_str(" then");
         tree.fetch_current_statement();
         tree.descend();
+        tree.next();
         parse_stmt_seq(&mut tree);
         tree.ascend();
         if tree.get_token().eq(&Token::End) {
@@ -278,6 +280,7 @@ fn parse_if(mut tree: &mut ParseTree) {
         } else if tree.get_token().eq(&Token::Else) {
             tree.current_statement.push_str("else");
             tree.descend();
+            tree.next();
             parse_stmt_seq(&mut tree);
             tree.ascend();
             if tree.get_token().eq(&Token::End) {
