@@ -3,7 +3,7 @@ program
 begin
     read X; 
     Y = 0;
-    while ( X > 0 ) loop
+    while (X > 0 ) loop
         read XY;
         write XY;
         Y = Y + XY; 

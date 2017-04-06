@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 //! The tokenizer takes the Core source file and converts it to a vector of parsable Tokens.
 
 use std::fs::File;
@@ -116,12 +118,12 @@ pub fn init_driver(file: &String) {
 
     parser::init_parser(output_vector.clone());
 
-    for token in output_vector {
-        match token {
-            Token::Error => exit_err(),
-            _ => println!("{}", token),
-        }
-    }
+    // for token in output_vector {
+    //     match token {
+    //         Token::Error => exit_err(),
+    //         _ => println!("{}", token),
+    //     }
+    // }
 }
 
 fn tokenize_file(file: &String) -> Vec<Token> {
