@@ -12,7 +12,7 @@ begin
 		while [(X2 >= 0) && (X2 < 50)			] loop
 			write X1, X2, X3;
 			write Y1, Y2, Y3;
-			X2 = X2 + 5	;	
+			X2 = X2 + 5	;
 			X1 = Y3 + 4;
 
 			if [(Y3 > 0) || [(X3 > 0) && (X3 < 10)]] then
@@ -25,8 +25,8 @@ begin
 					Y1 = Y3 - X2;
 					write Y1;
 				end;
-			end;		
-		end;		
+			end;
+		end;
 		if (X3==0) then
 			Y3 = X2;
 		else

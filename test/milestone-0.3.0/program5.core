@@ -1,0 +1,15 @@
+program int X1, X4; int X2, X3, X7;
+
+          begin X1=0; X2=1; X3=1; read X4;
+
+                while (X1 < X4) loop
+
+                                   X7=X2+X3; X2=X3;
+
+                                   X3=X7; X1=X1+1;
+
+                                 end ;
+
+                write X2;
+
+          end

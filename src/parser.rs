@@ -298,6 +298,7 @@ fn parse_if(mut tree: &mut ParseTree) {
             }
         } else if tree.get_token().eq(&Token::Else) {
             tree.current_statement.push_str("else");
+            tree.fetch_current_statement();
             tree.descend();
             tree.next();
             parse_stmt_seq(&mut tree);

@@ -6,8 +6,8 @@ begin
 	if (X2==X2) then
 		while [(X2 >= 500) && (X2 < 1000)			] loop
 			write X2;
-			X2 = X2 - 5	;			
-		end;		
+			X2 = X2 - 5	;
+		end;
 		if (X==0) then
 			X = X2;
 		else

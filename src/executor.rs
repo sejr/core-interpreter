@@ -184,7 +184,7 @@ fn execute_if(mut tree: &mut ParseTree) {
                 tree.next();
             }
         } else {
-            while !tree.get_token().eq(&Token::Else) || !tree.get_token().eq(&Token::End) {
+            while !tree.get_token().eq(&Token::Else) && !tree.get_token().eq(&Token::End) {
                 tree.next();
             }
         }
@@ -231,13 +231,22 @@ fn execute_loop(mut tree: &mut ParseTree) {
     if tree.get_token().eq(&Token::Loop) {
         tree.next();
         let loop_depth:u32 = tree.get_depth();
-        tree.descend();
         if result {
+            tree.descend();
             execute_stmt_seq(&mut tree);
             tree.set_state(start_state);
             execute_loop(&mut tree);
         } else {
-            while !tree.get_token().eq(&Token::End) && tree.get_depth() != loop_depth {
+            let mut nest_count: u32 = 0;
+            while !tree.get_token().eq(&Token::End) || nest_count != 0 {
+                if tree.get_token().eq(&Token::If) || tree.get_token().eq(&Token::While) {
+                    nest_count += 1;
+                }
+
+                if tree.get_token().eq(&Token::End) && nest_count != 0 {
+                    nest_count -= 1;
+                }
+
                 tree.next();
             }
             tree.ascend();
