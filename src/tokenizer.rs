@@ -109,7 +109,7 @@ pub fn print_usage() {
     /*
      * This is a simple function that helps the user understand how to use our interpreter.
      */
-    println!("Usage: ./core_interpreter <core-source-file-name>");
+    println!("Usage: ./core <core-source-file-name>");
 }
 
 pub fn init_driver(file: &String) {
