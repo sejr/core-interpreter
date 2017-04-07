@@ -319,8 +319,8 @@ fn tokenize_subtraction(buf: &Vec<u8>, state: &mut usize) -> Token {
 
     // For a more detailed token
     let integer_result = integer.parse().unwrap();
-
-    println!("TOKEN: {}", Token::Integer(integer_result));
+    //
+    // println!("TOKEN: {}", Token::Integer(integer_result));
     Token::Integer(integer_result)
 
 }

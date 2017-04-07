@@ -1,0 +1,23 @@
+program
+  int N, A, B, C;
+
+begin
+
+  A = 0;
+  B = 1;
+
+  read N;
+
+  while (N > 0) loop
+
+    write A;
+
+    C = A + B;
+    A = B;
+    B = C;
+
+    N = N - 1;
+
+  end;
+
+end
