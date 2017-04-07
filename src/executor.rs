@@ -3,18 +3,21 @@
 #![allow(unused_imports)]
 #![allow(unused_variables)]
 #![allow(unused_assignments)]
+#![allow(unused_must_use)]
 
+use std::io;
+use std::io::stdout;
+use std::io::Write;
 use std::ops::Index;
 use tokenizer::Token;
 use parser::ParseTree;
 use std::collections::HashMap;
 
-pub fn init_executor(file_tokens: Vec<Token>, stdin: Vec<i32>) {
+pub fn init_executor(file_tokens: Vec<Token>) {
     let mut this_execute_tree = ParseTree {
         tokens: file_tokens.clone(),
-        input_stream: stdin.clone(),
-        output_stream: Vec::new(),
         memory: HashMap::new(),
+        output_stream: Vec::new(),
         current_statement: "".to_string(),
         statements: Vec::new(),
         context: Vec::new(),
@@ -296,9 +299,27 @@ fn execute_in(mut tree: &mut ParseTree) {
 
     // We are actually doing the reading here!
     for id in tree.context.clone() {
-        let val: i32 = tree.read_stdin();
-        tree.insert_variable(id.clone(), val.clone());
-        // tree.output_stream.push(format!("{} = {}", id, val));
+        let mut found_int: bool = false;
+        let mut val: i32;
+
+        print!("{}: ", id.clone());
+        stdout().flush();
+        while !found_int {
+            let mut input_text = String::new();
+            io::stdin()
+                .read_line(&mut input_text)
+                .expect("failed to read from stdin");
+
+            let trimmed = input_text.trim();
+            match trimmed.parse::<i32>() {
+                Ok(i) => {
+                    val = i;
+                    tree.insert_variable(id.clone(), val);
+                    found_int = true;
+                },
+                Err(..) => println!("You entered {} but Core expected an integer value.", trimmed)
+            };
+        }
     }
 
     if tree.get_token().eq(&Token::Semicolon) {

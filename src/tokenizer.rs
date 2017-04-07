@@ -5,9 +5,8 @@
 use std::fs::File;
 use std::fmt;
 use std::io::prelude::*;
-use std::io::{BufReader,BufRead};
+use std::io::{BufReader};
 use std::process;
-use parser;
 use executor;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -90,7 +89,7 @@ pub fn is_valid_input(arg_count: usize) -> bool {
      *
      * TODO: May move test_is_valid_input here, changing this to doc comments.
      */
-    if arg_count != 3 {
+    if arg_count != 2 {
         return false;
     }
 
@@ -110,20 +109,14 @@ pub fn print_usage() {
     /*
      * This is a simple function that helps the user understand how to use our interpreter.
      */
-    println!("Usage: ./core_interpreter <core-source-file-name> <std-input-file-name>");
+    println!("Usage: ./core_interpreter <core-source-file-name>");
 }
 
-pub fn init_driver(file: &String, stdin: &String) {
+pub fn init_driver(file: &String) {
     let output_vector: Vec<Token> = tokenize_file(file);
-    let mut stdin_vector: Vec<i32> = Vec::new();
 
-    let file = File::open(stdin).unwrap();
-    for line in BufReader::new(file).lines() {
-        stdin_vector.push(line.unwrap().parse().unwrap());
-    }
-
-    parser::init_parser(output_vector.clone(), stdin_vector.clone());
-    executor::init_executor(output_vector.clone(), stdin_vector.clone());
+    // parser::init_parser(output_vector.clone(), stdin_vector.clone());
+    executor::init_executor(output_vector.clone());
 
     // for token in output_vector {
     //     match token {

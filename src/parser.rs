@@ -10,7 +10,6 @@ use std::collections::HashMap;
 #[derive(Clone)]
 pub struct ParseTree {
     pub tokens: Vec<Token>,
-    pub input_stream: Vec<i32>,
     pub output_stream: Vec<String>,
     pub memory: HashMap<String, i32>,
     pub current_statement: String,
@@ -38,9 +37,9 @@ impl ParseTree {
         }
     }
 
-    pub fn read_stdin(&mut self) -> i32 {
-        return self.input_stream.remove(0);
-    }
+    // pub fn read_stdin(&mut self) -> i32 {
+    //     // return self.input_stream.remove(0);
+    // }
 
     pub fn retrieve_integer(&mut self) -> &i32 {
         match *self.get_token() {
@@ -105,7 +104,6 @@ impl ParseTree {
 pub fn init_parser(file_tokens: Vec<Token>, stdin: Vec<i32>) {
     let mut this_parse_tree = ParseTree {
         tokens: file_tokens.clone(),
-        input_stream: stdin.clone(),
         output_stream: Vec::new(),
         memory: HashMap::new(),
         current_statement: "".to_string(),
@@ -367,11 +365,11 @@ fn parse_in(mut tree: &mut ParseTree) {
     parse_id_list(&mut tree); // Filling context
 
     // We are actually doing the reading here!
-    for id in tree.context.clone() {
-        let val: i32 = tree.read_stdin();
-        tree.insert_variable(id.clone(), val.clone());
-        // tree.output_stream.push(format!("{} = {}", id, val));
-    }
+    // for id in tree.context.clone() {
+    //     // let val: i32 = tree.read_stdin();
+    //     // tree.insert_variable(id.clone(), val.clone());
+    //     // tree.output_stream.push(format!("{} = {}", id, val));
+    // }
 
     if tree.get_token().eq(&Token::Semicolon) {
         tree.current_statement.push(';');
