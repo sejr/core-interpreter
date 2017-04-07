@@ -8,27 +8,28 @@ use tokenizer::Token;
 use std::collections::HashMap;
 
 #[derive(Clone)]
-struct ParseTree {
-    tokens: Vec<Token>,
-    input_stream: Vec<i32>,
-    memory: HashMap<String, i32>,
-    current_statement: String,
-    statements: Vec<String>,
-    context: Vec<String>,
-    state: u32,
-    depth: u32
+pub struct ParseTree {
+    pub tokens: Vec<Token>,
+    pub input_stream: Vec<i32>,
+    pub output_stream: Vec<String>,
+    pub memory: HashMap<String, i32>,
+    pub current_statement: String,
+    pub statements: Vec<String>,
+    pub context: Vec<String>,
+    pub state: u32,
+    pub depth: u32
 }
 
 impl ParseTree {
-    fn next(&mut self) {
+    pub fn next(&mut self) {
         self.state += 1;
     }
 
-    fn get_token(&mut self) -> &Token {
+    pub fn get_token(&mut self) -> &Token {
         return &self.tokens.index(self.state as usize);
     }
 
-    fn retrieve_identifier(&mut self) -> String {
+    pub fn retrieve_identifier(&mut self) -> String {
         match *self.get_token() {
             Token::Identifier(ref id) => return id.to_string(),
             _ => {
@@ -37,18 +38,18 @@ impl ParseTree {
         }
     }
 
-    fn read_stdin(&mut self) -> i32 {
+    pub fn read_stdin(&mut self) -> i32 {
         return self.input_stream.remove(0);
     }
 
-    fn retrieve_integer(&mut self) -> &i32 {
+    pub fn retrieve_integer(&mut self) -> &i32 {
         match *self.get_token() {
             Token::Integer(ref value) => return value,
             _ => panic!("ParseTree.retrieve_integer: token is not integer")
         }
     }
 
-    fn push_statement(&mut self, statement: String) {
+    pub fn push_statement(&mut self, statement: String) {
         for i in 0..(self.depth * 4) {
             print!(" ");
         }
@@ -56,7 +57,7 @@ impl ParseTree {
         self.statements.push(statement);
     }
 
-    fn fetch_current_statement(&mut self) {
+    pub fn fetch_current_statement(&mut self) {
         for i in 0..(self.depth * 4) {
             print!(" ");
         }
@@ -65,18 +66,18 @@ impl ParseTree {
         self.current_statement = "".to_string();
     }
 
-    fn insert_variable(&mut self, identifier: String, value: i32) {
+    pub fn insert_variable(&mut self, identifier: String, value: i32) {
         self.memory.insert(identifier, value);
     }
 
-    fn retrieve_variable(&mut self, identifier: &str) -> i32 {
+    pub fn retrieve_variable(&mut self, identifier: &str) -> i32 {
         match self.memory.get(identifier) {
             Some(&value) => return value,
             _ => panic!("retrieve_variable: variable not present in HashMap"),
         }
     }
 
-    fn display_variables(&mut self) {
+    pub fn display_variables(&mut self) {
         println!("\nVariables updated. Shown below.");
         for (identifier, value) in &self.memory {
             println!("{}: {}", identifier, value);
@@ -84,11 +85,19 @@ impl ParseTree {
         println!("");
     }
 
-    fn descend(&mut self) {
+    pub fn set_state(&mut self, state: u32) {
+        self.state = state;
+    }
+
+    pub fn get_depth(&mut self) -> u32 {
+        self.depth
+    }
+
+    pub fn descend(&mut self) {
         self.depth += 1;
     }
 
-    fn ascend(&mut self) {
+    pub fn ascend(&mut self) {
         self.depth -= 1;
     }
 }
@@ -97,6 +106,7 @@ pub fn init_parser(file_tokens: Vec<Token>, stdin: Vec<i32>) {
     let mut this_parse_tree = ParseTree {
         tokens: file_tokens.clone(),
         input_stream: stdin.clone(),
+        output_stream: Vec::new(),
         memory: HashMap::new(),
         current_statement: "".to_string(),
         statements: Vec::new(),
@@ -210,7 +220,6 @@ fn parse_stmt_seq(mut tree: &mut ParseTree) {
     }
 
     if id_flag {
-        parse_id(&mut tree);
         parse_assign(&mut tree);
     }
 
@@ -239,10 +248,17 @@ fn parse_assign(mut tree: &mut ParseTree){
 
     // <ID> = <EXP>;
 
+    tree.context.clear(); // New context
+
+    let current_id: String = tree.retrieve_identifier();
+
+    parse_id(&mut tree);
     if tree.get_token().eq(&Token::Assignment) {
         tree.current_statement.push_str(" = ");
         tree.next(); // throw away =
-        parse_exp(&mut tree);
+        let result: i32 = parse_exp(&mut tree);
+        tree.insert_variable(current_id.clone(), result.clone());
+        // tree.output_stream.push(format!("{} = {}", current_id, result.to_string()));
         if tree.get_token().eq(&Token::Semicolon) {
             tree.current_statement.push(';');
             tree.fetch_current_statement();
@@ -313,7 +329,7 @@ fn parse_loop(mut tree: &mut ParseTree) {
 
     tree.current_statement.push_str("while ");
     tree.next();
-    parse_cond(&mut tree);
+    let result: bool = parse_cond(&mut tree);
     if tree.get_token().eq(&Token::Loop) {
         tree.current_statement.push_str(" loop");
         tree.fetch_current_statement();
@@ -352,7 +368,8 @@ fn parse_in(mut tree: &mut ParseTree) {
     // We are actually doing the reading here!
     for id in tree.context.clone() {
         let val: i32 = tree.read_stdin();
-        tree.insert_variable(id, val);
+        tree.insert_variable(id.clone(), val.clone());
+        // tree.output_stream.push(format!("{} = {}", id, val));
     }
 
     if tree.get_token().eq(&Token::Semicolon) {
@@ -368,10 +385,16 @@ fn parse_out(mut tree: &mut ParseTree) {
 
     // write <ID LIST>;
 
+    tree.context.clear(); // New context
     tree.current_statement.push_str("write ");
     tree.next();
 
     parse_id_list(&mut tree);
+    for id in tree.context.clone() {
+        let result: String = tree.retrieve_variable(&id).to_string();
+        tree.output_stream.push(format!("{} = {}", id, result));
+    }
+
     if tree.get_token().eq(&Token::Semicolon) {
         tree.current_statement.push(';');
         tree.fetch_current_statement();
@@ -381,21 +404,23 @@ fn parse_out(mut tree: &mut ParseTree) {
     }
 }
 
-fn parse_cond(mut tree: &mut ParseTree) {
+fn parse_cond(mut tree: &mut ParseTree) -> bool {
 
     // <COMP>
     // !<COMP>
     // [<COND> && <COND>]
     // [<COND> || <COND>]
 
+    let mut result: bool = false;
+
     if tree.get_token().eq(&Token::LeftSquare) {
         tree.current_statement.push('[');
         tree.next();
-        parse_cond(&mut tree);
+        result = parse_cond(&mut tree);
         if tree.get_token().eq(&Token::LogicalAnd) {
             tree.current_statement.push_str(" && ");
             tree.next();
-            parse_cond(&mut tree);
+            result = result && parse_cond(&mut tree);
             if tree.get_token().eq(&Token::RightSquare) {
                 tree.current_statement.push(']');
                 tree.next();
@@ -405,7 +430,7 @@ fn parse_cond(mut tree: &mut ParseTree) {
         } else if tree.get_token().eq(&Token::LogicalOr) {
             tree.current_statement.push_str(" || ");
             tree.next();
-            parse_cond(&mut tree);
+            result = result || parse_cond(&mut tree);
             if tree.get_token().eq(&Token::RightSquare) {
                 tree.current_statement.push(']');
                 tree.next();
@@ -417,22 +442,29 @@ fn parse_cond(mut tree: &mut ParseTree) {
         }
     } else if tree.get_token().eq(&Token::Exclamation) {
         tree.current_statement.push_str("!");
-        parse_comp(&mut tree);
+        result = !parse_comp(&mut tree);
     } else {
-        parse_comp(&mut tree);
+        result = parse_comp(&mut tree);
     }
+
+    result
 }
 
-fn parse_comp(mut tree: &mut ParseTree) {
+fn parse_comp(mut tree: &mut ParseTree) -> bool {
 
     // (<OP> <COMP OP> <OP>)
+
+    let mut result: bool = false;
+    let mut op_a: i32;
+    let mut op_b: i32;
+    let mut cmp: u32;
 
     if tree.get_token().eq(&Token::LeftParen) {
         tree.current_statement.push('(');
         tree.next();
-        parse_op(&mut tree);
-        parse_comp_op(&mut tree);
-        parse_op(&mut tree);
+        op_a = parse_op(&mut tree);
+        cmp = parse_comp_op(&mut tree);
+        op_b = parse_op(&mut tree);
         if tree.get_token().eq(&Token::RightParen) {
             tree.current_statement.push(')');
             tree.next();
@@ -440,49 +472,69 @@ fn parse_comp(mut tree: &mut ParseTree) {
     } else {
         panic!("parse_comp: expected '('");
     }
+
+    match cmp {
+        0 => result = op_a == op_b,
+        1 => result = op_a != op_b,
+        2 => result = op_a <  op_b,
+        3 => result = op_a <= op_b,
+        4 => result = op_a >  op_b,
+        5 => result = op_a >= op_b,
+        _ => panic!("parse_comp: invalid comp_op")
+    }
+
+    result
 }
 
-fn parse_exp(mut tree: &mut ParseTree) {
+fn parse_exp(mut tree: &mut ParseTree) -> i32 {
 
     // <TRM>
     // <TRM> + <EXP>
     // <TRM> - <EXP>
 
-    parse_trm(&mut tree);
+    let mut result: i32 = 0;
+
+    result = parse_trm(&mut tree);
 
     if tree.get_token().eq(&Token::Addition) {
         // handle addition, garble
         tree.current_statement.push_str(" + ");
         tree.next();
-        parse_exp(&mut tree);
+        result += parse_exp(&mut tree);
     } else if tree.get_token().eq(&Token::Subtraction) {
         // handle subtraction
         tree.current_statement.push_str(" - ");
         tree.next();
-        parse_exp(&mut tree);
+        result -= parse_exp(&mut tree);
     }
+
+    result
 }
 
-fn parse_trm(mut tree: &mut ParseTree) {
+fn parse_trm(mut tree: &mut ParseTree) -> i32 {
 
     // <OP>
     // <OP> * <TRM>
 
-    parse_op(&mut tree);
+    let mut result: i32 = parse_op(&mut tree);
 
     if tree.get_token().eq(&Token::Multiplication) {
         // handle multiplication, garble
         tree.current_statement.push_str(" * ");
         tree.next();
-        parse_trm(&mut tree);
+        result *= parse_trm(&mut tree);
     }
+
+    result
 }
 
-fn parse_op(mut tree: &mut ParseTree) {
+fn parse_op(mut tree: &mut ParseTree) -> i32 {
 
     // <NO>
     // <ID>
     // (<EXP>)
+
+    let mut result:i32 = 0;
 
     let mut id_flag: bool = false;
     let mut int_flag: bool = false;
@@ -490,7 +542,7 @@ fn parse_op(mut tree: &mut ParseTree) {
     if tree.get_token().eq(&Token::LeftParen) {
         tree.current_statement.push('(');
         tree.next(); // left paren
-        parse_exp(&mut tree);
+        result = parse_exp(&mut tree);
         if tree.get_token().eq(&Token::RightParen) {
             tree.current_statement.push(')');
             tree.next();
@@ -503,43 +555,61 @@ fn parse_op(mut tree: &mut ParseTree) {
             &Token::Integer(ref i) => int_flag = true,
             _ => panic!("parse_op: token is not identifier")
         }
+
         if id_flag {
             id_flag = false;
+            let current_id: String = tree.retrieve_identifier().clone();
+            result = tree.retrieve_variable(&current_id);
             parse_id(&mut tree);
         } else if int_flag {
             int_flag = false;
+            result = *tree.retrieve_integer();
             parse_int(&mut tree);
         } else {
             panic!("parse_op: invalid argument")
         }
     }
+
+    result
 }
 
-fn parse_comp_op(mut tree: &mut ParseTree) {
+fn parse_comp_op(mut tree: &mut ParseTree) -> u32 {
+
+    // This is like a literal "opcode" we will be using
+    // to perform the actual comparisons later on
+    let mut result: u32 = 0;
 
     match tree.get_token() {
         &Token::LogicalEquality => {
             tree.current_statement.push_str(" == ");
+            result = 0;
         },
         &Token::LogicalInequality => {
             tree.current_statement.push_str(" != ");
+            result = 1;
         },
         &Token::LessThan => {
             tree.current_statement.push_str(" < ");
+            result = 2;
         },
         &Token::LessThanEqual => {
             tree.current_statement.push_str(" <= ");
+            result = 3;
         },
         &Token::GreaterThan => {
             tree.current_statement.push_str(" > ");
+            result = 4;
         },
         &Token::GreaterThanEqual => {
             tree.current_statement.push_str(" >= ");
+            result = 5;
         },
         _ => panic!("parse_comp_op: unexpected comp op")
     }
 
     tree.next();
+
+    result
 }
 
 fn parse_id(mut tree: &mut ParseTree) {

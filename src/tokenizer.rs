@@ -8,6 +8,7 @@ use std::io::prelude::*;
 use std::io::{BufReader,BufRead};
 use std::process;
 use parser;
+use executor;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Token {
@@ -122,6 +123,7 @@ pub fn init_driver(file: &String, stdin: &String) {
     }
 
     parser::init_parser(output_vector.clone(), stdin_vector.clone());
+    executor::init_executor(output_vector.clone(), stdin_vector.clone());
 
     // for token in output_vector {
     //     match token {
