@@ -25,7 +25,7 @@ cargo build
 
 # Run it
 cd target/debug
-./core-interpreter <core-source-file-name>
+./core-interpreter <core-source-file-path>
 ```
 
 ### Build for Release
@@ -36,5 +36,5 @@ cargo build --release
 
 # Run it
 cd target/release
-./core-interpreter <core-source-file-name>
+./core-interpreter <core-source-file-path>
 ```
