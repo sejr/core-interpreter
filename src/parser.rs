@@ -10,7 +10,6 @@ use std::collections::HashMap;
 #[derive(Clone)]
 pub struct ParseTree {
     pub tokens: Vec<Token>,
-    pub output_stream: Vec<String>,
     pub memory: HashMap<String, i32>,
     pub current_statement: String,
     pub statements: Vec<String>,
@@ -104,7 +103,6 @@ impl ParseTree {
 pub fn init_parser(file_tokens: Vec<Token>, stdin: Vec<i32>) {
     let mut this_parse_tree = ParseTree {
         tokens: file_tokens.clone(),
-        output_stream: Vec::new(),
         memory: HashMap::new(),
         current_statement: "".to_string(),
         statements: Vec::new(),
@@ -389,10 +387,10 @@ fn parse_out(mut tree: &mut ParseTree) {
     tree.next();
 
     parse_id_list(&mut tree);
-    for id in tree.context.clone() {
-        let result: String = tree.retrieve_variable(&id).to_string();
-        tree.output_stream.push(format!("{} = {}", id, result));
-    }
+    // for id in tree.context.clone() {
+    //     let result: String = tree.retrieve_variable(&id).to_string();
+    //     tree.output_stream.push(format!("{} = {}", id, result));
+    // }
 
     if tree.get_token().eq(&Token::Semicolon) {
         tree.current_statement.push(';');

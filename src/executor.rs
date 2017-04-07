@@ -17,7 +17,6 @@ pub fn init_executor(file_tokens: Vec<Token>) {
     let mut this_execute_tree = ParseTree {
         tokens: file_tokens.clone(),
         memory: HashMap::new(),
-        output_stream: Vec::new(),
         current_statement: "".to_string(),
         statements: Vec::new(),
         context: Vec::new(),
@@ -50,9 +49,9 @@ fn execute_prog(mut tree: &mut ParseTree) {
             execute_stmt_seq(&mut tree);
             if tree.get_token().eq(&Token::End) {
                 // tree.ascend();
-                for line in tree.output_stream.clone() {
-                    println!("{}", line);
-                }
+                // for line in tree.output_stream.clone() {
+                //     println!("{}", line);
+                // }
             } else {
                 panic!("execute_prog: expected 'end'");
             }
@@ -339,7 +338,7 @@ fn execute_out(mut tree: &mut ParseTree) {
     execute_id_list(&mut tree);
     for id in tree.context.clone() {
         let result: String = tree.retrieve_variable(&id).to_string();
-        tree.output_stream.push(format!("{} = {}", id, result));
+        println!("{}", result);
     }
 
     if tree.get_token().eq(&Token::Semicolon) {
