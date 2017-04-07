@@ -46,7 +46,7 @@ fn execute_prog(mut tree: &mut ParseTree) {
             tree.next(); // Consume the 'begin' keyword
             execute_stmt_seq(&mut tree);
             if tree.get_token().eq(&Token::End) {
-                tree.ascend();
+                // tree.ascend();
                 for line in tree.output_stream.clone() {
                     println!("{}", line);
                 }
@@ -180,11 +180,30 @@ fn execute_if(mut tree: &mut ParseTree) {
 
         if result {
             execute_stmt_seq(&mut tree);
-            while !tree.get_token().eq(&Token::End) {
+            let mut nest_count: u32 = 0;
+            while !tree.get_token().eq(&Token::End) || nest_count != 0 {
+                if tree.get_token().eq(&Token::If) || tree.get_token().eq(&Token::While) {
+                    nest_count += 1;
+                }
+
+                if tree.get_token().eq(&Token::End) && nest_count != 0 {
+                    nest_count -= 1;
+                }
+
                 tree.next();
             }
         } else {
-            while !tree.get_token().eq(&Token::Else) && !tree.get_token().eq(&Token::End) {
+            // println!("Inside else");
+            let mut nest_count: u32 = 0;
+            while !tree.get_token().eq(&Token::Else) && !tree.get_token().eq(&Token::End) || nest_count != 0{
+                if tree.get_token().eq(&Token::If) || tree.get_token().eq(&Token::While) {
+                    nest_count += 1;
+                }
+
+                if tree.get_token().eq(&Token::End) && nest_count != 0 {
+                    nest_count -= 1;
+                }
+
                 tree.next();
             }
         }
@@ -503,6 +522,9 @@ fn execute_comp_op(mut tree: &mut ParseTree) -> u32 {
 fn execute_id(mut tree: &mut ParseTree) {
     let identifier: String = tree.retrieve_identifier();
     tree.context.push(identifier.clone());
+    if !tree.memory.contains_key(&identifier.clone()) {
+        tree.insert_variable(identifier.clone(), 0);
+    }
     tree.next();
 }
 

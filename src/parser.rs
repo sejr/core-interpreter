@@ -619,6 +619,9 @@ fn parse_id(mut tree: &mut ParseTree) {
     let identifier: String = tree.retrieve_identifier();
     tree.current_statement.push_str(&identifier);
     tree.context.push(identifier.clone());
+    if !tree.memory.contains_key(&identifier.clone()) {
+        tree.insert_variable(identifier.clone(), 0);
+    }
     tree.next();
 }
 

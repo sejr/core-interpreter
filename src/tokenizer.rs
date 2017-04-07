@@ -175,7 +175,7 @@ fn tokenize_file(file: &String) -> Vec<Token> {
 
             // Mathematical operators
             '+' => next_token = Token::Addition,
-            '-' => next_token = Token::Subtraction,
+            '-' => next_token = tokenize_subtraction(&buf, &mut i),
             '*' => next_token = Token::Multiplication,
 
             // Logical operators
@@ -287,6 +287,50 @@ fn tokenize_gt_gte(buf: &Vec<u8>, state: &mut usize) -> Token {
  * The tokens below require a little extra validation. Specifically, they require whitespace
  * or one of the proceeding tokens in order to be identified correctly.
  */
+
+fn tokenize_subtraction(buf: &Vec<u8>, state: &mut usize) -> Token {
+    let mut i: usize = *state as usize;
+
+    // Validating separation between tokens
+    if (buf[i - 1] as char >= 'a' && buf[i - 1] as char <= 'z') ||
+       (buf[i - 1] as char >= 'A' && buf[i - 1] as char <= 'Z') {
+        return Token::Error;
+    }
+
+    let start_number = buf[i] as char;
+    let mut integer: String = start_number.to_string();
+
+    if !(buf[i + 1] as char <= '9' && buf[i + 1] as char >= '0') {
+        // println!("{} {} {}", buf[i] as char, buf[i + 1] as char, buf[i + 2] as char);
+        // println!("SUBTRACTION");
+        return Token::Subtraction;
+    } else {
+        i + 1;
+        while i + 1 < buf.len() {
+            i += 1;
+            if buf[i] as char >= '0' && buf[i] as char <= '9' {
+                let new_digit = buf[i] as char;
+                integer.push_str(&new_digit.to_string());
+            } else if (buf[i] as char >= 'a' && buf[i] as char <= 'z') ||
+                      (buf[i] as char >= 'A' && buf[i] as char <= 'z') {
+                return Token::Error;
+            } else {
+                i -= 1;
+                break;
+            }
+        }
+    }
+
+    // Update the state of our buffer.
+    *state = i;
+
+    // For a more detailed token
+    let integer_result = integer.parse().unwrap();
+
+    println!("TOKEN: {}", Token::Integer(integer_result));
+    Token::Integer(integer_result)
+
+}
 
 fn tokenize_integer(buf: &Vec<u8>, state: &mut usize) -> Token {
     let mut i: usize = *state as usize;
