@@ -1,6 +1,6 @@
 [package]
-name = "core_interpreter"
-version = "0.2.0"
+name = "core"
+version = "0.4.0"
 authors = ["Samuel Roth <roth.375@osu.edu>"]
 
 [dependencies]
