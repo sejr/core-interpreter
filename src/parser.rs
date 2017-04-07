@@ -421,7 +421,8 @@ fn parse_cond(mut tree: &mut ParseTree) -> bool {
         if tree.get_token().eq(&Token::LogicalAnd) {
             tree.current_statement.push_str(" && ");
             tree.next();
-            result = result && parse_cond(&mut tree);
+            let result_and: bool = parse_cond(&mut tree);
+            result = result && result_and;
             if tree.get_token().eq(&Token::RightSquare) {
                 tree.current_statement.push(']');
                 tree.next();
@@ -431,7 +432,8 @@ fn parse_cond(mut tree: &mut ParseTree) -> bool {
         } else if tree.get_token().eq(&Token::LogicalOr) {
             tree.current_statement.push_str(" || ");
             tree.next();
-            result = result || parse_cond(&mut tree);
+            let result_or: bool = parse_cond(&mut tree);
+            result = result || result_or;
             if tree.get_token().eq(&Token::RightSquare) {
                 tree.current_statement.push(']');
                 tree.next();
