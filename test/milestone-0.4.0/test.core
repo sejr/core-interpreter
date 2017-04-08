@@ -12,6 +12,13 @@ begin
 
     // Hello world!
 
+    /*
+     * This is a block comment
+     * =======================
+     * This can be used to provide a better explanation of some of the code you are working
+     * on. None of this stuff will get past the tokenizer.
+     */
+
     write A;
 
     C = A + B;

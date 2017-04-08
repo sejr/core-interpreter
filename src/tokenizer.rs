@@ -49,7 +49,9 @@ pub enum Token {
     GreaterThan,
     LessThanEqual,
     GreaterThanEqual,
+
     LineComment,
+    BlockComment,
 
     // User-defined
     Integer(i32),
@@ -192,6 +194,7 @@ fn tokenize_file(file: &String) -> Vec<Token> {
         match next_token {
             Token::Whitespace => print!(""),
             Token::LineComment => print!(""),
+            Token::BlockComment => print!(""),
             Token::Divison => print!(""),
             _ => {
                 if next_token == Token::Error {
@@ -342,6 +345,24 @@ fn tokenize_division(buf: &Vec<u8>, state: &mut usize) -> Token {
         *state = i - 1;
         // println!("State: {}", buf[*state as usize] as char);
         return Token::LineComment;
+    } else if buf[i + 1] as char == '*' {
+        i += 2;
+        let mut found_block_end: bool = false;
+        while buf[i] as char != '*' && !found_block_end {
+            i = i+1;
+
+            if buf[i] as char == '*' {
+                if buf[i + 1] as char == '/' {
+                    i = i + 2;
+                    found_block_end = true;
+                } else {
+                    i += 1;
+                }
+            }
+        }
+
+        *state = i;
+        return Token::BlockComment;
     } else {
         return Token::Divison;
     }
