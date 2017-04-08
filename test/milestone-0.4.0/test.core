@@ -10,6 +10,8 @@ begin
 
   while (N > 0) loop
 
+    // Hello world!
+
     write A;
 
     C = A + B;

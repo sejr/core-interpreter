@@ -42,12 +42,14 @@ pub enum Token {
     Addition,
     Subtraction,
     Multiplication,
+    Divison,
     LogicalInequality,
     LogicalEquality,
     LessThan,
     GreaterThan,
     LessThanEqual,
     GreaterThanEqual,
+    LineComment,
 
     // User-defined
     Integer(i32),
@@ -169,25 +171,28 @@ fn tokenize_file(file: &String) -> Vec<Token> {
             // Mathematical operators
             '+' => next_token = Token::Addition,
             '-' => next_token = tokenize_subtraction(&buf, &mut i),
+            '/' => next_token = tokenize_division(&buf, &mut i),
             '*' => next_token = Token::Multiplication,
 
             // Logical operators
             '=' => next_token = tokenize_equal(&buf, &mut i),
-            '!' => next_token = tokenize_inequal(&buf, &mut i),            // TODO
-            '<' => next_token = tokenize_lt_lte(&buf, &mut i),             // TODO
-            '>' => next_token = tokenize_gt_gte(&buf, &mut i),             // TODO
+            '!' => next_token = tokenize_inequal(&buf, &mut i),
+            '<' => next_token = tokenize_lt_lte(&buf, &mut i),
+            '>' => next_token = tokenize_gt_gte(&buf, &mut i),
             '|' => next_token = tokenize_logical_or(&buf, &mut i),
-            '&' => next_token = tokenize_logical_and(&buf, &mut i),        // TODO
+            '&' => next_token = tokenize_logical_and(&buf, &mut i),
 
             // User-defined values
             '0'...'9' => next_token = tokenize_integer(&buf, &mut i),
-            'a'...'z' => next_token = tokenize_keyword(&buf, &mut i),    // TODO (Modify)
+            'a'...'z' => next_token = tokenize_keyword(&buf, &mut i),
             'A'...'Z' => next_token = tokenize_identifier(&buf, &mut i),
             _ => next_token = Token::Error,
         }
 
         match next_token {
             Token::Whitespace => print!(""),
+            Token::LineComment => print!(""),
+            Token::Divison => print!(""),
             _ => {
                 if next_token == Token::Error {
                     tokenizer_output.push(next_token);
@@ -319,10 +324,27 @@ fn tokenize_subtraction(buf: &Vec<u8>, state: &mut usize) -> Token {
 
     // For a more detailed token
     let integer_result = integer.parse().unwrap();
-    //
+
     // println!("TOKEN: {}", Token::Integer(integer_result));
     Token::Integer(integer_result)
 
+}
+
+fn tokenize_division(buf: &Vec<u8>, state: &mut usize) -> Token {
+    let mut i: usize = *state as usize;
+
+    if buf[i + 1] as char == '/' {
+        while buf[i] as char != '\n' {
+            i = i + 1;
+            // println!("Token: {}", buf[i] as char);
+        }
+
+        *state = i - 1;
+        // println!("State: {}", buf[*state as usize] as char);
+        return Token::LineComment;
+    } else {
+        return Token::Divison;
+    }
 }
 
 fn tokenize_integer(buf: &Vec<u8>, state: &mut usize) -> Token {

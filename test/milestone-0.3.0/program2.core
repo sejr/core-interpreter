@@ -1,7 +1,7 @@
 program
 	int X2, X;
 begin
-	X2 = 5;
+	read X2;
 	write X2;
 	if (X2==X2) then
 		while [(X2 >= 500) && (X2 < 1000)			] loop
