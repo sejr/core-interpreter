@@ -10,15 +10,27 @@ Here is an example of a quick program that prints out N numbers of the fibonacci
 program
   int N, A, B, C;
 begin
+
   A = 0;
   B = 1;
-  read N;
+  
+  read N; // Fetch the # of fibs we want to print.
+  
   while (N > 0) loop
+  
+    /*
+     * This is a block comment. Stuff inside it is ignored.
+     * An example of a line comment is shown above.
+     */
+  
     write A;
+    
     C = A + B;
     A = B;
     B = C;
+    
     N = N - 1;
+    
   end;
 end
 ```
